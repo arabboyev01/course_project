@@ -8,14 +8,12 @@ const prisma = new PrismaClient();
 
 ReviewRoutes.post("/", async (req: Request, res: Response) => {
 
+    const imageUrl = req?.files?.data;
     const { name, groupName, tags, reviewText, grade, userId } = req.body;
-    const imageUrl = req?.file?.path
-    console.log("Image", imageUrl)
-    console.log("name", name)
 
-    const putObject: any = uploadImageToS3(imageUrl);
-    await s3.send(new PutObjectCommand(putObject));
-    const imageURL = `https://${putObject.Bucket}.s3.amazonaws.com/${putObject.Key}`
+    const putObject = imageUrl && uploadImageToS3(imageUrl);
+    putObject && s3.send(new PutObjectCommand(putObject));
+    const imageURL = s3 && `https://${putObject.Bucket}.s3.amazonaws.com/${putObject.Key}`
 
     try {
         const review = await prisma.review.create({
@@ -34,6 +32,7 @@ ReviewRoutes.post("/", async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while creating the review.' });
     }
+
 })
 
 export { ReviewRoutes };

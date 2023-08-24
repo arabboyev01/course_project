@@ -21,8 +21,10 @@ const s3 = new S3Client({
 })
 
 
-const uploadImageToS3 = async (imagePath: any) => {
+const uploadImageToS3 = (imagePath: any) => {
     const imageKey = 'images/' + Date.now() + '-' + Math.round(Math.random() * 1E9);
+    console.log("imagePath",  imagePath)
+
     const putObjectParams = {
         Bucket: 'arn:aws:s3:::courseprojects',
         Key: imageKey,
