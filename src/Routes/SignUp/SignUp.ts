@@ -10,8 +10,7 @@ signUpRoute.post('/', async (req: Request, res: Response): Promise<any> => {
 
     const { username, email, firstName, lastName, password } = req.body;
 
-    const hashedPassword = await HashingPassword(password);
-    console.log(hashedPassword)
+    const hashedPassword = await HashingPassword(password)
 
     try {
         const user = await prisma.user.create({
