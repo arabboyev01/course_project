@@ -1,14 +1,13 @@
 import { Request, Response } from 'express';
 import jwt, { GetPublicKeyOrSecret, Secret } from 'jsonwebtoken';
 
-const authenticateUser = function (req: Request, res: Response, next: Function) {
+const authenticateUser = function (req: Request | any, res: Response, next: Function) {
 
     const token = req.headers.authorization;
     try {
-        const decodedToken = verifyToken(token)
-
-        //@ts-ignore
+        const decodedToken: any = verifyToken(token)
         req.user = decodedToken.userId;
+
         next();
     } catch (error) {
         return res.status(401).json({error: 'Unauthorized'});
