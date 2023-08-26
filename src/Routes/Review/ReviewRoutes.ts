@@ -1,38 +1,49 @@
 import express, { Request, Response } from 'express';
-import { uploadImageToS3, s3 } from '../../CloudService/connect';
+import { uploadImageToS3 } from '../../CloudService/connect';
 import { PrismaClient } from '.prisma/client';
-import { PutObjectCommand } from "@aws-sdk/client-s3"
+import multer from 'multer';
+import { authenticateUser } from '../../AuthUser/AuthenticateUser'
 
 const ReviewRoutes = express.Router();
 const prisma = new PrismaClient();
+const upload = multer({dest: 'uploads/'});
 
-ReviewRoutes.post("/", async (req: Request, res: Response) => {
-
-    const imageUrl = req?.files?.data;
-    const { name, groupName, tags, reviewText, grade, userId } = req.body;
-
-    const putObject = imageUrl && uploadImageToS3(imageUrl);
-    putObject && s3.send(new PutObjectCommand(putObject));
-    const imageURL = s3 && `https://${putObject.Bucket}.s3.amazonaws.com/${putObject.Key}`
+ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Request, res: Response) => {
 
     try {
+
+        const {name, groupName, tags, reviewText, grade, userId} = req.body;
+         if (!name || !groupName || !reviewText || !grade || !userId || !req.file) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        // @ts-ignore
+        const authenticatedUser = await req.user;
+
+         if (!authenticatedUser.isAdmin) {
+            return res.status(403).json({ error: 'Permission denied' });
+        }
+
+        const imageUrl: string = await uploadImageToS3(req.file.buffer, req.file.originalname);
+        const parsedGrade: number = parseInt(grade);
+        const parsedUserId: number = parseInt(userId)
+
         const review = await prisma.review.create({
             data: {
                 name,
                 groupName,
                 reviewText,
-                imageUrl: imageURL,
-                grade,
-                user: { connect: { id: userId } },
-                tags: { connect: tags.map((tagId: number) => ({ id: tagId }))}
+                imageUrl,
+                grade: parsedGrade,
+                user: {connect: {id: parsedUserId}},
+                // tags: { connect: tags.map((tagId: any) => ({ id: tagId.id })) }
             }
         });
-
-        res.json(review);
+        return res.json(review);
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while creating the review.' });
+        return res.status(500).json(error);
     }
 
-})
+});
 
 export { ReviewRoutes };

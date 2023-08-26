@@ -1,38 +1,31 @@
-import AWS from "aws-sdk";
-import fs from "fs";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
-import { fromBase64 } from "@aws-sdk/util-base64-node"
-import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity"
-// AWS.config.update({
-//     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-//     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-//     region: 'ap-southeast-1'
-// });
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { fromIni } from '@aws-sdk/credential-provider-ini'
 
-// @ts-ignore
-const s3 = new S3Client({
-    region: process.env.AWS_REGION,
-    credentials: {
-        client: fromCognitoIdentityPool({
-            // @ts-ignore
-            identityPoolId: process.env.AWS_COGNITO_IDENTITY_POOL_ID 
-        })
-    }
-})
+const s3Client = new S3Client({
+    region: 'ap-southeast-1',
+    credentials: fromIni()
 
+});
 
-const uploadImageToS3 = (imagePath: any) => {
-    const imageKey = 'images/' + Date.now() + '-' + Math.round(Math.random() * 1E9);
-    console.log("imagePath",  imagePath)
+const uploadImageToS3 = async (imageBuffer: Buffer, originalName: string): Promise<string> => {
+    const uniqueName = 'images/' + Date.now() + '-' + Math.round(Math.random() * 1E9) + '-' + originalName;
 
-    const putObjectParams = {
-        Bucket: 'arn:aws:s3:::courseprojects',
-        Key: imageKey,
-        Body: fromBase64(imagePath),
+    const params: any = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: uniqueName,
+        Body: imageBuffer,
         ContentType: 'image/jpeg'
-    };
+    }
 
-    return putObjectParams
+    try {
+        const command = new PutObjectCommand(params);
+        await s3Client.send(command);
+
+        return `https://${params.Bucket}.s3.${s3Client.config.region}.amazonaws.com/${uniqueName}`;
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
 };
 
-export { uploadImageToS3, s3 };
+export { uploadImageToS3 };

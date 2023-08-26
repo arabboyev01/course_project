@@ -1,15 +1,17 @@
 import express, { Request, Response } from 'express';
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
+import { HashingPassword } from '../../HashingPassword/Hashing'
 
 const prisma = new PrismaClient();
 const signUpRoute = express.Router();
 
-signUpRoute.post('/', async (req: Request, res: Response) => {
+signUpRoute.post('/', async (req: Request, res: Response): Promise<any> => {
 
     const { username, email, firstName, lastName, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const hashedPassword = await HashingPassword(password);
+    console.log(hashedPassword)
 
     try {
         const user = await prisma.user.create({
@@ -18,7 +20,7 @@ signUpRoute.post('/', async (req: Request, res: Response) => {
                 email,
                 firstName,
                 lastName,
-                hashPassword: hashedPassword,
+                hashPassword: hashedPassword
             },
         });
         const token = jwt.sign({ userId: user.id }, 'user_token')
@@ -28,4 +30,4 @@ signUpRoute.post('/', async (req: Request, res: Response) => {
     }
 });
 
-export { signUpRoute };
+export { signUpRoute }

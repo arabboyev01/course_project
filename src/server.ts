@@ -3,12 +3,9 @@ import cors from "cors"
 import { signUpRoute } from './Routes/SignUp/SignUp';
 import { loginRoute } from './Routes/Login/Login';
 import { ReviewRoutes } from "./Routes/Review/ReviewRoutes"
-import fileUpload from "express-fileupload"
 
 const app = express();
 const port = process.env.PORT || 3002;
-app.use(fileUpload());
-
 app.use(cors());
 app.use(express.json());
 app.listen(port, () => console.log(`Server is running on port ${port}`));

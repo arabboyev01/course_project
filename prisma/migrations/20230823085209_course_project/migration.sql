@@ -6,7 +6,7 @@ CREATE TABLE "User" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "hashPassword" TEXT NOT NULL,
-
+f
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
