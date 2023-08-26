@@ -23,7 +23,6 @@ const uploadImageToS3 = async (imageBuffer: Buffer, originalName: string): Promi
 
         return `https://${params.Bucket}.s3.${s3Client.config.region}.amazonaws.com/${uniqueName}`;
     } catch (error) {
-        console.log(error)
         throw error
     }
 };

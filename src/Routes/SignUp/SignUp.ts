@@ -22,7 +22,7 @@ signUpRoute.post('/', async (req: Request, res: Response): Promise<any> => {
                 hashPassword: hashedPassword
             },
         });
-        const token = jwt.sign({ userId: user.id }, 'user_token')
+        const token = jwt.sign({ userId: user.id }, 'course_project')
         res.json({user, token});
     } catch (error) {
         res.status(500).send({ error: "An error occurred during sign-up." });

@@ -5,7 +5,7 @@ import { loginRoute } from './Routes/Login/Login';
 import { ReviewRoutes } from "./Routes/Review/ReviewRoutes"
 
 const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.listen(port, () => console.log(`Server is running on port ${port}`));

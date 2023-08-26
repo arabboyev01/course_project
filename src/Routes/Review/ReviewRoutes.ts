@@ -8,23 +8,21 @@ const ReviewRoutes = express.Router();
 const prisma = new PrismaClient();
 const upload = multer({dest: 'uploads/'});
 
-ReviewRoutes.post('/', authenticateUser, upload.single('image'), async ({body, file, user}: Request | any, res: Response) => {
+ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Request | any, res: Response) => {
 
-    try {
+    // try {
 
-        const {name, groupName, tags, reviewText, grade, userId} = body;
+        const {name, groupName, tags, reviewText, grade, userId} = req.body;
 
-         if (!name || !groupName || !reviewText || !grade || !userId || !file) {
-            return res.status(400).json({ error: 'Missing required fields' });
+        if (!name || !groupName || !reviewText || !grade || !userId || !req.file) {
+            return res.status(400).json({error: 'Missing required fields'});
         }
 
-         const authenticatedUser = await user;
-
-         if (!authenticatedUser.isAdmin) {
-            return res.status(403).json({ error: 'Permission denied' });
+        if (!req.user) {
+            return res.status(403).json({error: 'Permission denied'});
         }
 
-        const imageUrl: string = await uploadImageToS3(file.buffer, file.originalname);
+        const imageUrl: string = await uploadImageToS3(req.file.buffer, req.file.originalname);
         const parsedGrade: number = parseInt(grade);
         const parsedUserId: number = parseInt(userId)
 
@@ -40,10 +38,9 @@ ReviewRoutes.post('/', authenticateUser, upload.single('image'), async ({body, f
             }
         });
         return res.json(review);
-    } catch (error) {
-        return res.status(500).json(error);
-    }
-
-});
+    // } catch (error) {
+    //     return res.status(500).json(error);
+    // }
+})
 
 export { ReviewRoutes };
