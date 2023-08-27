@@ -12,32 +12,31 @@ ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Req
 
     // try {
 
-        const {name, groupName, tags, reviewText, grade, userId} = req.body;
+    const {name, groupName, tags, reviewText, grade} = req.body;
+    if (!req.file) {
+        return res.status(400).json({error: 'No image uploaded'});
+    }
 
-        if (!name || !groupName || !reviewText || !grade || !userId || !req.file) {
-            return res.status(400).json({error: 'Missing required fields'});
+    console.log(req.file);
+
+    if (!req.user) {
+        return res.status(403).json({error: 'Permission denied'});
+    }
+    const imageUrl: string = await uploadImageToS3(req.file.buffer, req.file.originalname);
+    const parsedGrade: number = parseInt(grade);
+
+    const review = await prisma.review.create({
+        data: {
+            name,
+            groupName,
+            reviewText,
+            imageUrl,
+            grade: parsedGrade,
+            user: {connect: {id: req.user}},
+            tags: {connect: tags.map((tagId: any) => ({id: tagId.id, name: tagId.name}))}
         }
-
-        if (!req.user) {
-            return res.status(403).json({error: 'Permission denied'});
-        }
-
-        const imageUrl: string = await uploadImageToS3(req.file.buffer, req.file.originalname);
-        const parsedGrade: number = parseInt(grade);
-        const parsedUserId: number = parseInt(userId)
-
-        const review = await prisma.review.create({
-            data: {
-                name,
-                groupName,
-                reviewText,
-                imageUrl,
-                grade: parsedGrade,
-                user: {connect: {id: parsedUserId}},
-                // tags: { connect: tags.map((tagId: any) => ({ id: tagId.id })) }
-            }
-        });
-        return res.json(review);
+    });
+    return res.json(review);
     // } catch (error) {
     //     return res.status(500).json(error);
     // }
