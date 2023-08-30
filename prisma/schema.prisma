@@ -16,6 +16,9 @@ model User {
   lastName    String
   hashPassword String
   reviews     Review[]
+  likedBy     Like[]   // Add this field for the opposite relationship
+
+  @@map("users") // Use this to specify the table name if needed
 }
 
 model Review {
@@ -26,8 +29,20 @@ model Review {
   reviewText String
   imageUrl   String?  // Optional image URL
   grade      Int      @default(0)
+  likes      Like[]
+  createdAt  DateTime  @default(now())
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
+}
+
+model Like {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  reviewId      Int
+  user          User     @relation(fields: [userId], references: [id])
+  review        Review   @relation(fields: [reviewId], references: [id])
+
+  @@unique([userId, reviewId])
 }
 
 model Tag {

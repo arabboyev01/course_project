@@ -1,11 +1,7 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { fromIni } from '@aws-sdk/credential-provider-ini'
 
-const s3Client = new S3Client({
-    region: 'ap-southeast-1',
-    credentials: fromIni()
-
-});
+const s3Client = new S3Client();
 
 const uploadImageToS3 = async (imageBuffer: Buffer, originalName: string): Promise<string> => {
     const uniqueName = 'images/' + Date.now() + '-' + Math.round(Math.random() * 1E9) + '-' + originalName;

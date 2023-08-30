@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 const loginRoute = express.Router();
 const prisma = new PrismaClient();
 
-loginRoute.get('/', async (req: Request, res: Response) => {
+loginRoute.post('/', async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     try {
