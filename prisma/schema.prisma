@@ -16,9 +16,17 @@ model User {
   lastName    String
   hashPassword String
   reviews     Review[]
-  likedBy     Like[]   // Add this field for the opposite relationship
+  likedBy     Like[] 
+  imageUrl   String?  
+  comments Comment[] 
+  userType    UserType @default(USER) // Set "user" as the default value
 
-  @@map("users") // Use this to specify the table name if needed
+  @@map("users")
+}
+
+enum UserType {
+  USER
+  ADMIN
 }
 
 model Review {
@@ -27,10 +35,11 @@ model Review {
   groupName  String   // "Movies", "Books", "Games", etc.
   tags       Tag[]
   reviewText String
-  imageUrl   String?  // Optional image URL
+  imageUrl   String?  
   grade      Int      @default(0)
   likes      Like[]
   createdAt  DateTime  @default(now())
+  comments Comment[] 
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
 }
@@ -44,6 +53,17 @@ model Like {
 
   @@unique([userId, reviewId])
 }
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  text      String
+  userId    Int
+  reviewId  Int
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  review    Review    @relation(fields: [reviewId], references: [id])
+}
+
 
 model Tag {
   id   Int    @id @default(autoincrement())

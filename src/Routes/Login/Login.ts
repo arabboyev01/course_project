@@ -13,13 +13,13 @@ loginRoute.post('/', async (req: Request, res: Response) => {
         const user = await prisma.user.findUnique({ where: { username } });
 
         if (!user) {
-            return res.status(401).json({ message: 'Invalid username or password' });
+            throw new Error
         }
 
         const passwordMatches = await bcrypt.compare(password, user.hashPassword);
 
         if (!passwordMatches) {
-            return res.status(401).json({ message: 'Invalid username or password' });
+            throw new Error
         }
 
         const token = jwt.sign({ userId: user.id }, 'course_project');

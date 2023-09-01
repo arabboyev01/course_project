@@ -4,6 +4,7 @@ import { signUpRoute } from './Routes/SignUp/SignUp';
 import { loginRoute } from './Routes/Login/Login';
 import { ReviewRoutes } from "./Routes/Review/ReviewRoutes"
 import { Users } from "./Routes/Users/users";
+import { GetReviews } from "./Routes/Review/GetReviews"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -16,3 +17,4 @@ app.use('/api/register', signUpRoute);
 app.use('/api/login', loginRoute);
 app.use("/api/review", ReviewRoutes);
 app.use("/api/users", Users);
+app.use("/api/all-reviews", GetReviews)

@@ -7,10 +7,9 @@ const prisma = new PrismaClient();
 const signUpRoute = express.Router();
 
 signUpRoute.post('/', async (req: Request, res: Response): Promise<any> => {
-
     const { username, email, firstName, lastName, password } = req.body;
 
-    const hashedPassword = await HashingPassword(password)
+    const hashedPassword = await HashingPassword(password);
 
     try {
         const user = await prisma.user.create({
@@ -22,11 +21,25 @@ signUpRoute.post('/', async (req: Request, res: Response): Promise<any> => {
                 hashPassword: hashedPassword
             },
         });
-        const token = jwt.sign({ userId: user.id }, 'course_project')
-        res.json({user, token});
+
+        if (user.id === 1) {
+            await prisma.user.update({
+                where: { id: 1 },//@ts-ignore
+                data: { userType: 'ADMIN' }
+            });
+        }
+
+        const token = jwt.sign({ userId: user.id }, 'course_project');
+        res.json({ user, token });
     } catch (error) {
         res.status(500).send({ error: "An error occurred during sign-up." });
     }
 });
+
+
+
+
+
+
 
 export { signUpRoute }
