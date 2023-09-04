@@ -24,26 +24,35 @@ GetAuthThirdPartyApi.post("/", async (req: Request, res: Response) => {
 
             const token = jwt.sign({ userId: existingUser.id }, "course_project");
 
-            return res.json({ message: 'You are logged in', token });
+            return res.json({ existingUser, token });
+            
         } else {
 
             const hashedPassword = await HashingPassword(password);
 
             const newUser = await prisma.user.create({
                 data: {
-                    firstName,
-                    lastName,
                     username,
                     email,
-                    hashPassword: hashedPassword,
+                    firstName,
+                    lastName,
+                    hashPassword: hashedPassword
                 },
             });
+
+            if (newUser.id === 1) {
+                await prisma.user.update({
+                    where: { id: 1 },//@ts-ignore
+                    data: { userType: 'ADMIN' }
+                });
+            }
 
 
             const token = jwt.sign({ userId: newUser.id }, "course_project");
 
-            return res.json({ message: 'User created successfully', token });
+            return res.json({ newUser, token });
         }
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
