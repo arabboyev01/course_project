@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const GetAuthThirdPartyApi = express.Router();
 
 GetAuthThirdPartyApi.post("/", async (req: Request, res: Response) => {
-    const { firstName, lastName, username, email, password } = req.body;
+    const { firstName, lastName, username, email, password , imageUrl} = req.body;
 
     try {
         const existingUser = await prisma.user.findUnique({ where: { username } });
@@ -36,7 +36,8 @@ GetAuthThirdPartyApi.post("/", async (req: Request, res: Response) => {
                     email,
                     firstName,
                     lastName,
-                    hashPassword: hashedPassword
+                    hashPassword: hashedPassword,
+                    imageUrl
                 },
             });
 

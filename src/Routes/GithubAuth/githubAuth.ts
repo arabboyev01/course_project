@@ -22,7 +22,7 @@ getUserToken.get('/', async (req: Request, res: Response) => {
             },
         });
         // @ts-ignore
-        if (!response ?.status === 200) {
+        if (!response?.status === 200) {
             throw new Error(`GitHub OAuth request failed with status ${response.status}`);
         }
 
