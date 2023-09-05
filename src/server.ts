@@ -9,6 +9,7 @@ import { GetTags } from "./Routes/Tags/Tags"
 import { getUserToken } from "./Routes/GithubAuth/githubAuth"
 import { getGithubUserData } from "./Routes/GithubAuth/githubAuth"
 import { GetAuthThirdPartyApi } from "./Routes/ThirdPartyApiAuth"
+import { singleUser } from "./Routes/SingleUser/SingleUser"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -26,3 +27,4 @@ app.use("/api/tags", GetTags)
 app.use("/getAccessToken", getUserToken)
 app.use("/getGithubUserData", getGithubUserData)
 app.use('/api/get-auth', GetAuthThirdPartyApi)
+app.use("/api/single-user", singleUser)
