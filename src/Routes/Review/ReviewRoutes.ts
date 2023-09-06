@@ -9,9 +9,8 @@ const prisma = new PrismaClient();
 
 ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Request, res: Response) => {
     
-    const { name, groupName, tags, reviewText, grade, userId } = req.body;
+    const { name, groupName, tags, reviewText, userId } = req.body;
     const tagsArray = JSON.parse(tags);
-    const parseGrade = parseInt(grade)
     const parseUser = parseInt(userId)
 
     try {
@@ -31,7 +30,6 @@ ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Req
                 },
                 reviewText,
                 imageUrl: "/smdfkmkmscldsfds",
-                grade: parseGrade,
                 userId: parseUser,
             },
         });
