@@ -13,41 +13,31 @@ myReveiw.get('/', async (req: Request, res: Response): Promise<any> => {
     const { userId } = userKey;
 
     try {
-    //    const reviews = await prisma.review.findMany({
-    //        where: { userId },
-    //    });
-       
-    //    return res.json(reviews);
-    const reviews = await prisma.review.findMany({
-        where: { userId },
-        include: {
-            // Include the associated User data
-            user: {
-                select: {
-                    firstName: true,
-                    lastName: true,
-                    email: true,
-                    username: true,
-                    imageUrl: true,
+        const reviews = await prisma.review.findMany({
+            where: { userId },
+            include: {
+                user: {
+                    select: {
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                        username: true,
+                        imageUrl: true,
+                    },
+                },
+                tags: {
+                    select: {
+                        name: true,
+                        id: true,
+                    },
+                },
+            },
+        });
 
-                    // Add any other fields you need from the User model
-                },
-            },
-            // Include the associated Tags data
-            tags: {
-                select: {
-                    name: true,
-                    id: true,
-                    // Add any other fields you need from the Tag model
-                },
-            },
-        },
-    });
-    
-    return res.json(reviews);
+        return res.json(reviews);
 
     } catch (error) {
-       return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 })
 

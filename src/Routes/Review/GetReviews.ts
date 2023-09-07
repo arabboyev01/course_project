@@ -6,6 +6,10 @@ const prisma = new PrismaClient();
 GetReviews.get('/', async (req: Request, res: Response) => {
     const { selectedTags }: string | any = req.query
     const parsed = JSON.parse(selectedTags);
+    if(!selectedTags){
+        res.json('Please provide a query');
+        return;
+    }
 
     try {
         let reviews;
