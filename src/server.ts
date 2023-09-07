@@ -15,10 +15,14 @@ import { myReveiw } from "./Routes/Review/MyReview"
 
 const app = express();
 const port = process.env.PORT || 3002;
+// const port = 3002
 app.use(cors());
 app.use(express.static('uploads'))
 app.use(express.json());
 app.listen(port, () => console.log(`Server is running on port ${port}`));
+// app.listen(port, '0.0.0.0', () => {
+//     // console.log(`Server is running on http://0.0.0.0:${port}`);
+// });
 
 app.use('/api/register', signUpRoute)
 app.use('/api/login', loginRoute)
