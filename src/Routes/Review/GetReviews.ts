@@ -2,69 +2,42 @@ import express, { Request, Response } from "express";
 import { PrismaClient } from '.prisma/client';
 const GetReviews = express.Router();
 const prisma = new PrismaClient();
+import { baseQuery } from "./baseQuery"
 
 GetReviews.get('/', async (req: Request, res: Response) => {
-    const { selectedTags }: string | any = req.query
-    const parsed = JSON.parse(selectedTags);
-    if(!selectedTags){
-        res.json('Please provide a query');
-        return;
-    }
+    const { selectedTags, groupName }: string | any = req.query
+    const parsedTags = JSON.parse(selectedTags);
 
     try {
         let reviews;
+        if (parsedTags) {
 
-        if (parsed?.length > 0 && Array.isArray(parsed)) {
+            if (parsedTags.length > 0) {
+                reviews = await prisma.review.findMany({
+                    where: {
+                        tags: {
+                            some: {
+                                name: {
+                                    in: parsedTags,
+                                },
+                            },
+                        },
+                        ...(groupName && { groupName }),
+                    },
+                    ...baseQuery,
+                });
+            } else {
+                reviews = await prisma.review.findMany(baseQuery);
+            }
+        } else if (groupName !== "null") {
             reviews = await prisma.review.findMany({
                 where: {
-                    tags: {
-                        some: {
-                            name: {
-                                in: parsed
-                            }
-                        },
-                    },
+                    groupName,
                 },
-                include: {
-                    tags: {
-                        select: {
-                            name: true,
-                            id: true,
-                        },
-                    },
-                    user: {
-                        select: {
-                            firstName: true,
-                            lastName: true,
-                            email: true,
-                            imageUrl: true,
-                            username: true,
-                            id: true,
-                        },
-                    },
-                },
+                ...baseQuery,
             });
         } else {
-            reviews = await prisma.review.findMany({
-                include: {
-                    tags: {
-                        select: {
-                            name: true,
-                            id: true,
-                        },
-                    },
-                    user: {
-                        select: {
-                            firstName: true,
-                            lastName: true,
-                            email: true,
-                            imageUrl: true,
-                            username: true,
-                            id: true,
-                        },
-                    },
-                },
-            });
+            reviews = await prisma.review.findMany(baseQuery);
         }
 
         res.json(reviews);
