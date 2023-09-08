@@ -1,35 +1,19 @@
 import express, { Request, Response } from 'express';
 import { PrismaClient } from "@prisma/client";
+import { baseQuery } from '../../utils/baseQuery';
 
 const prisma = new PrismaClient();
 const singleReview = express.Router();
 
 singleReview.get('/', async (req: Request, res: Response): Promise<any> => {
-    
+
     const { id }: any = req.query;
-    const myId = (+id)
+    const myId = parseInt(id)
 
     try {
         const review = await prisma.review.findUnique({
             where: { id: myId },
-             include: {
-                    tags: {
-                        select: {
-                            name: true,
-                            id: true,
-                        },
-                    },
-                    user: {
-                        select: {
-                            firstName: true,
-                            lastName: true,
-                            email: true,
-                            imageUrl: true,
-                            username: true,
-                            id: true,
-                        },
-                    },
-                },
+            ...baseQuery
         });
 
         if (!review) {
