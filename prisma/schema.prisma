@@ -19,6 +19,7 @@ model User {
   likedBy     Like[] 
   imageUrl   String?  
   comments Comment[] 
+  ratings     Rating[] 
   userType    UserType @default(USER) // Set "user" as the default value
 
   @@map("users")
@@ -36,12 +37,24 @@ model Review {
   tags       Tag[]
   reviewText String
   imageUrl   String?  
-  grade      Int      @default(0)
+  ratings    Rating[]
+  grade  Float      @default(0)
   likes      Like[]
   createdAt  DateTime  @default(now())
   comments Comment[] 
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
+}
+
+model Rating {
+  id       Int    @id @default(autoincrement())
+  ratingNum   Int
+  reviewId Int
+  userId   Int
+  review   Review @relation(fields: [reviewId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
+
+  @@unique([reviewId, userId])
 }
 
 model Like {

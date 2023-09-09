@@ -22,7 +22,6 @@ GetReviews.get('/', async (req: Request, res: Response) => {
                                 },
                             },
                         },
-                        ...(groupName && { groupName }),
                     },
                     ...baseQuery,
                 });

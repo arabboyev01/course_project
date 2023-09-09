@@ -14,8 +14,28 @@ const baseQuery = {
                 imageUrl: true,
                 username: true,
                 id: true,
+                likedBy: true,
+                comments: true,
+                ratings: true
             },
         },
+        comments: {
+            select: {
+                id: true,
+                text: true,
+                userId: true,
+                reviewId: true,
+                createdAt: true,
+            }
+        },
+        ratings: {
+            select: {
+                id: true,
+                ratingNum: true,
+                reviewId: true,
+                userId: true,
+            }
+        }
     },
 };
 
