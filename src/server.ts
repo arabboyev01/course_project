@@ -14,6 +14,7 @@ import { updateUser } from "./Routes/UpdateUser/updateUser"
 import { myReveiw } from "./Routes/Review/MyReview"
 import { singleReview } from "./Routes/SingleReview/SingleReview"
 import { gradeReq } from "./Routes/Grades/grades"
+import { likeReq } from "./Routes/Likes/Likes";
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -37,13 +38,4 @@ app.use("/api/update-user", updateUser)
 app.use("/api/user-review", myReveiw)
 app.use("/api/single-review", singleReview)
 app.use("/api/grade-rate", gradeReq);
-
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient();
-
-app.get('/rating', (req, res) => {
-    const response = prisma.rating.findMany()
-
-    res.json(response)
-})
+app.use("/api/likes", likeReq)

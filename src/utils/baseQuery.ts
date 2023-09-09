@@ -35,6 +35,11 @@ const baseQuery = {
                 reviewId: true,
                 userId: true,
             }
+        },
+        likes: {
+            select: {
+                reviewId: true,
+            }
         }
     },
 };
