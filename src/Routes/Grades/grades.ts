@@ -1,12 +1,14 @@
-import express, { Request, Response } from 'express';
+import express, { Response } from 'express';
 import { PrismaClient } from '@prisma/client'
+import { authenticateUser } from '../../AuthUser/AuthenticateUser'
 
 const prisma = new PrismaClient();
 const gradeReq = express.Router();
 
-gradeReq.post('/', async (req: Request, res: Response): Promise<any> => {
+gradeReq.post('/', authenticateUser, async (req: any, res: Response): Promise<any> => {
     try {
-        const { userId, reviewId, rating } = await req.body;
+        const {reviewId, rating} = await req.body;
+        const userId = typeof req.user !== 'undefined' ? req.user : undefined;
 
         const existingRating = await prisma.rating.findFirst({
             where: {
@@ -52,7 +54,7 @@ gradeReq.post('/', async (req: Request, res: Response): Promise<any> => {
             },
         });
 
-        res.status(201).json({ message: 'Rating updated successfully' });
+        res.status(201).json({message: 'Rating updated successfully'});
     } catch (error) {
         res.status(500).json(error);
     }

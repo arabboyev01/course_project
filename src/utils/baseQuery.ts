@@ -38,7 +38,7 @@ const baseQuery = {
         },
         likes: {
             select: {
-                reviewId: true,
+                userId: true,
             }
         }
     },
