@@ -10,6 +10,10 @@ gradeReq.post('/', authenticateUser, async (req: any, res: Response): Promise<an
         const {reviewId, rating} = await req.body;
         const userId = typeof req.user !== 'undefined' ? req.user : undefined;
 
+        if (userId === undefined) {
+            return res.status(403).json("please_login_first")
+        };
+
         const existingRating = await prisma.rating.findFirst({
             where: {
                 userId,

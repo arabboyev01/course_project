@@ -44,6 +44,7 @@ CREATE TABLE "Like" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "reviewId" INTEGER NOT NULL,
+    "isLiked" BOOLEAN NOT NULL,
 
     CONSTRAINT "Like_pkey" PRIMARY KEY ("id")
 );

@@ -20,7 +20,7 @@ model User {
   imageUrl   String?  
   comments Comment[] 
   ratings     Rating[] 
-  userType    UserType @default(USER) // Set "user" as the default value
+  userType    UserType @default(USER) 
 
   @@map("users")
 }
@@ -61,6 +61,7 @@ model Like {
   id            Int      @id @default(autoincrement())
   userId        Int
   reviewId      Int
+  isLiked   Boolean 
   user          User     @relation(fields: [userId], references: [id])
   review        Review   @relation(fields: [reviewId], references: [id])
 

@@ -15,6 +15,8 @@ import { myReveiw } from "./Routes/Review/MyReview"
 import { singleReview } from "./Routes/SingleReview/SingleReview"
 import { gradeReq } from "./Routes/Grades/grades"
 import { likeReq } from "./Routes/Likes/Likes";
+import { commentReq } from "./Routes/Comments/comments"
+import { getcomment } from "./Routes/Comments/getComents"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -39,3 +41,5 @@ app.use("/api/user-review", myReveiw)
 app.use("/api/single-review", singleReview)
 app.use("/api/grade-rate", gradeReq);
 app.use("/api/likes", likeReq)
+app.use("/api/comments", commentReq)
+app.use("/api/all-comments", getcomment)
