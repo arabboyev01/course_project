@@ -6,8 +6,11 @@ const prisma = new PrismaClient();
 
 getcomment.get("/", async (req: Request, res: Response) => {
     try {
+        const { reviewId }: any = req.query
+        const reviewID = parseInt(reviewId)
         const response = await prisma.comment.findMany({
-             include: {
+            where: { reviewId: reviewID },
+            include: {
                 user: {
                     select: {
                         id: true,

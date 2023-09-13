@@ -17,6 +17,7 @@ import { gradeReq } from "./Routes/Grades/grades"
 import { likeReq } from "./Routes/Likes/Likes";
 import { commentReq } from "./Routes/Comments/comments"
 import { getcomment } from "./Routes/Comments/getComents"
+import { SearchReq } from "./Routes/Search/search"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -43,3 +44,4 @@ app.use("/api/grade-rate", gradeReq);
 app.use("/api/likes", likeReq)
 app.use("/api/comments", commentReq)
 app.use("/api/all-comments", getcomment)
+app.use("/api/reviews/advanced-search", SearchReq)
