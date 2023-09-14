@@ -10,10 +10,8 @@ const uploadImageToS3 = async (imageBuffer: Buffer | undefined, originalName: st
         throw new Error('Image buffer and original name are required.');
     }
 
-    // const uniqueName = `images/${Date.now()}-${Math.round(Math.random() * 1E9)}-${originalName}`;
     const uniqueName = `images/${Date.now()}-${Math.round(Math.random() * 1E9)}.jpeg`;
     
-
     const params: BaucketParams = {
         Bucket: 'coursename',
         Key: uniqueName,
@@ -30,5 +28,5 @@ const uploadImageToS3 = async (imageBuffer: Buffer | undefined, originalName: st
         throw error;
     }
 }
-				// "AWS": "arn:aws:iam::917140017249:user/course_project"
+
 export { uploadImageToS3 }
