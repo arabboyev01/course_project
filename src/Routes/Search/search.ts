@@ -12,13 +12,13 @@ SearchReq.get("/", async (req: Request, res: Response) => {
       const query = {
           where: {
               name: name ? { contains: name.toLowerCase()} : undefined,
-              groupName: groupName ? { contains: groupName.toLowerCase() } : undefined,
+              groupName: groupName ? { contains: groupName } : undefined,
           }
       };
   
       const reviews = await prisma.review.findMany(query);
-
       res.json(reviews);
+      
   } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'An error occurred while fetching reviews.' });

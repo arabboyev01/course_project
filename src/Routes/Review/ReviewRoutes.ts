@@ -7,20 +7,18 @@ import { upload } from "../../utils/diskStorage"
 const ReviewRoutes = express.Router();
 const prisma = new PrismaClient();
 
-ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Request, res: Response) => {
+ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Request | any, res: Response) => {
     
     const { name, groupName, tags, reviewText, userId } = req.body;
     const tagsArray = JSON.parse(tags);
     const parseUser = parseInt(userId)
 
     try {
-        // const fileBuffer = req?.file?.buffer;
-        // const originalFileName = req?.file?.originalname
+        const fileBuffer = req.file.buffer;
+        const originalFileName = req.file.originalname
 
-
-        // const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName);
-        // console.log(imageUrl)
-
+        const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName);
+     
         const review = await prisma.review.create({
             data: {
                 name,
@@ -29,7 +27,7 @@ ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Req
                     create: tagsArray.map((name: string) => ({ name })),
                 },
                 reviewText,
-                imageUrl: "/smdfkmkmscldsfds",
+                imageUrl,
                 userId: parseUser,
             },
         });
