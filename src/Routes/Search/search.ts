@@ -11,7 +11,7 @@ SearchReq.get("/", async (req: Request, res: Response) => {
   
       const query = {
           where: {
-              name: name ? { contains: name.toLowerCase()} : undefined,
+              name: name ? { contains: name} : undefined,
               groupName: groupName ? { contains: groupName } : undefined,
           }
       };
