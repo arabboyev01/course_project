@@ -6,45 +6,32 @@ const prisma = new PrismaClient();
 const likeReq = express.Router();
 
 likeReq.post('/', authenticateUser, async (req: any, res: Response): Promise<any> => {
+    const { reviewId } = req.body;
+    const userId = typeof req ?.user !== 'undefined' ? req ?.user : undefined;
+    
+    if (userId === undefined) {
+        return res.status(403).json("please_login_first");
+    }
+    
     try {
-        const { reviewId } = req.body;
-        const userId = typeof req ?.user !== 'undefined' ? req ?.user : undefined;
-
-        if(userId === undefined) {
-            return res.status(403).json("please_login_first")
-        }
-
         const existingLike = await prisma.like.findFirst({
             where: {
                 userId: userId,
                 reviewId: reviewId,
             },
-        })
-
+        });
+    
         if (existingLike) {
-            await prisma.like.delete({
+            const updatedLike = await prisma.like.update({
                 where: {
                     id: existingLike.id,
                 },
-            });
-
-            const userLikes = await prisma.like.findMany({
-                where: {
-                    reviewId: reviewId,
-                    userId: userId,
+                data: {
+                    isLiked: !existingLike.isLiked,
                 },
             });
-
-            if (userLikes.length === 0) {
-                await prisma.like.update({
-                    where: {
-                        id: reviewId,
-                    },
-                    data: {
-                        isLiked: false,
-                    },
-                });
-            }
+    
+            return res.json(`Like with userId ${userId}, reviewId ${reviewId} updated: isLiked=${updatedLike.isLiked}`);
         } else {
             const like = await prisma.like.create({
                 data: {
@@ -53,12 +40,14 @@ likeReq.post('/', authenticateUser, async (req: any, res: Response): Promise<any
                     isLiked: true,
                 },
             });
-
+    
             res.status(201).json(like);
         }
     } catch (error) {
-        res.status(500).json(error);
+        console.error('Error updating/creating like:', error);
+        res.status(500).json({ error: 'An error occurred while updating/creating like' });
     }
+    
 });
 
 export { likeReq }

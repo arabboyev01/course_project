@@ -21,6 +21,8 @@ import { SearchReq } from "./Routes/Search/search"
 import { updateUserImage } from "./Routes/UpdateImage/updateImage"
 import { removeReview } from "./Routes/Remove/RemoveReview"
 import { udateReveiwImage } from "./Routes/UpdateImage/updateReviewImage"
+import { getLike } from "./Routes/Likes/getLikes"
+import { updateReview } from "./Routes/UpdateReview/updateReview"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -51,3 +53,5 @@ app.use("/api/reviews/advanced-search", SearchReq)
 app.use("/api/update-image", updateUserImage)
 app.use("/api/update-image-review", udateReveiwImage)
 app.use('/api/delete-review', removeReview)
+app.use('/api/like-credentials', getLike)
+app.use('/api/review-update', updateReview)
