@@ -20,6 +20,7 @@ import { getcomment } from "./Routes/Comments/getComents"
 import { SearchReq } from "./Routes/Search/search"
 import { updateUserImage } from "./Routes/UpdateImage/updateImage"
 import { removeReview } from "./Routes/Remove/RemoveReview"
+import { udateReveiwImage } from "./Routes/UpdateImage/updateReviewImage"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -48,4 +49,5 @@ app.use("/api/comments", commentReq)
 app.use("/api/all-comments", getcomment)
 app.use("/api/reviews/advanced-search", SearchReq)
 app.use("/api/update-image", updateUserImage)
+app.use("/api/update-image-review", udateReveiwImage)
 app.use('/api/delete-review', removeReview)
