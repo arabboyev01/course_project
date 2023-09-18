@@ -1,44 +1,38 @@
 import express, { Request, Response } from 'express';
 import { PrismaClient } from "@prisma/client";
-import jwt from "jsonwebtoken"
+import { authenticateUser } from "../../AuthUser/AuthenticateUser"
+import { query } from "./query"
 
 const prisma = new PrismaClient();
 const myReveiw = express.Router();
 
-myReveiw.get('/', async (req: Request, res: Response): Promise<any> => {
-    const token: any = req.headers.authorization;
-    const secretKey: any = process.env.JWT_SECRET_KEY;
+myReveiw.get('/', authenticateUser, async (req: Request|any, res: Response) => {
 
-    const userKey: any = jwt.verify(token, secretKey)
-    const { userId } = userKey;
+    const userId = req.user;
 
     try {
-        const reviews = await prisma.review.findMany({
-            where: { userId },
-            include: {
-                user: {
-                    select: {
-                        firstName: true,
-                        lastName: true,
-                        email: true,
-                        username: true,
-                        imageUrl: true,
-                    },
-                },
-                tags: {
-                    select: {
-                        name: true,
-                        id: true,
-                    },
-                },
-            },
+        const isAdmin = await prisma.user.findUnique({
+            where: { id: userId },
         });
 
-        return res.json(reviews);
-
+        if (isAdmin?.userType === "ADMIN") {
+            const allReviews = await prisma.review.findMany({
+                ...query
+            });
+            return res.json(allReviews);
+        } else{
+            const reviews = await prisma.review.findMany({
+                where: { userId },
+                ...query
+            });
+            
+            return res.json(reviews);
+        }
     } catch (error) {
+        console.error('Error:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-})
+});
+
 
 export { myReveiw }
