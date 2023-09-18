@@ -11,7 +11,6 @@ updateReview.put('/', authenticateUser, async (req: Request | any, res: Response
 
     try {
         const singleReview = await prisma.review.findUnique({ where: { id: reviewId }})
-        console.log(singleReview)
 
         if (req.user === singleReview?.userId || req.admin) {
             const tagIds: any = await tagsQuery(tags)
