@@ -7,6 +7,7 @@ const authenticateUser = function (req: Request | any, res: Response, next: Next
     try {
         const decodedToken: any = verifyToken(token)
         req.user = decodedToken.userId;
+        req.admin = decodedToken.userType === "ADMIN"
 
         next();
     } catch (error) {

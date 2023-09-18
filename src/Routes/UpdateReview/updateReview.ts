@@ -9,8 +9,11 @@ const updateReview = express.Router();
 updateReview.put('/', authenticateUser, async (req: Request | any, res: Response): Promise<any> => {
     const { name, reviewText, groupName, tags, reviewId } = req.body;
 
-    if (req.user) {
-        try {
+    try {
+        const singleReview = await prisma.review.findUnique({ where: { id: reviewId }})
+        console.log(singleReview)
+
+        if (req.user === singleReview?.userId || req.admin) {
             const tagIds: any = await tagsQuery(tags)
             const updatedReview = await prisma.review.update({
                 where: { id: reviewId },
@@ -26,13 +29,12 @@ updateReview.put('/', authenticateUser, async (req: Request | any, res: Response
 
             res.status(200).json(updatedReview);
 
-        } catch (err) {
-            res.json(err)
+        } else {
+            res.json("Unauthorized user")
         }
-    } else {
-        res.json("Unauthorized user")
+    } catch (err) {
+        res.json(err)
     }
-
 })
 
 export { updateReview }
