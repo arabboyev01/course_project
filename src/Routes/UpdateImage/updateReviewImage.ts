@@ -11,32 +11,31 @@ const udateReveiwImage = express.Router();
 udateReveiwImage.put('/', authenticateUser, upload.single('image'), async (req: Request | any, res: Response): Promise<any> => {
     try {
 
-        if (!req.user) {
-            return res.status(501).json("Unathorized user")
-        }
-
         const { reviewId } = req.body
-        const fileBuffer = req.file.buffer;
-        const originalFileName = req.file.originalname
-
-        const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName);
-
-        const existingUser = await prisma.review.findUnique({
-            where: { id: parseInt(reviewId) }
-        });
-
-        if (!existingUser) {
+        
+        const singleReview = await prisma.review.findUnique({where: {id: parseInt(reviewId) }})
+        if (!singleReview) {
             return res.status(404).json({ error: 'Review not found' });
         }
 
-        const updatedReview = await prisma.review.update({
-            where: { id: parseInt(reviewId) },
-            data: { imageUrl }
-        });
+        if (req.user === singleReview?.userId || req.admin) {
+            const fileBuffer = req.file.buffer;
+            const originalFileName = req.file.originalname
+            
+            const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName);
+            
+            const updatedReview = await prisma.review.update({
+                where: { id: parseInt(reviewId) },
+                data: { imageUrl }
+            });
+            
+            return res.json({ message: 'Review imageUrl updated successfully', updatedReview });
 
-        res.json({ message: 'Review imageUrl updated successfully', updatedReview });
+        } else {
+            return res.status(501).json("Unathorized user")
+        }
+
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Internal server error' });
     }
 })
