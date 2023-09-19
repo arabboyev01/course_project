@@ -9,9 +9,7 @@ const prisma = new PrismaClient();
 const myReveiw = express.Router();
 
 myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) => {
-
-    const userId = req.user;
-    const cacheKey = generateUserReviewCacheKey(req);
+    const cacheKey = generateUserReviewCacheKey(req)
 
     try {
         const cachedData = await redis.get(cacheKey);
@@ -20,10 +18,7 @@ myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) =>
             const parsedData = JSON.parse(cachedData);
             return res.json(parsedData);
         } else {
-        
-            const isAdmin = await prisma.user.findUnique({
-                where: { id: userId },
-            });
+            const isAdmin = await prisma.user.findUnique({ where: { id: req.user } });
 
             let reviews;
 
@@ -33,12 +28,13 @@ myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) =>
                 });
             } else {
                 reviews = await prisma.review.findMany({
-                    where: { userId },
+                    where: { userId: req.user },
                     ...query,
                 });
             }
 
             await redis.setex(cacheKey, 3600, JSON.stringify(reviews));
+            await redis.del(cacheKey);
 
             return res.json(reviews);
         }

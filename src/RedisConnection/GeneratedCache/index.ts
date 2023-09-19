@@ -12,11 +12,11 @@ function generateReviewCache(req: Request) {
     return cacheKey;
 }
 
-function generateUserReviewCacheKey(req: Request) {
-    const { userId, productId }: string | any = req.query;
+function generateUserReviewCacheKey(req: Request|any) {
+    const { productId }: string | any = req.query;
     const endpoint = req.originalUrl;
 
-    const cacheKey = `user-review:${endpoint}:userId=${userId}:productId=${productId}`;
+    const cacheKey = `user-review:${endpoint}:userId=${req.user}:productId=${productId}`;
 
     return cacheKey;
 }
