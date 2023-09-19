@@ -7,7 +7,7 @@ const removeReview = express.Router();
 
 removeReview.delete('/', authenticateUser, async (req: any, res: Response): Promise<any> => {
 
-    if(req.user){
+    if(req.user || req.admin){
         try {
             const { id } = req.body
             const deletedReview = await prisma.review.delete({
