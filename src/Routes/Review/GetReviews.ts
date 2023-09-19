@@ -1,46 +1,46 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from '.prisma/client';
+import { baseQuery } from "../../utils/baseQuery"
+import { redis } from "../../RedisConnection"
+import { generateReviewCache } from "../../RedisConnection/GeneratedCache"
+
 const GetReviews = express.Router();
 const prisma = new PrismaClient();
-import { baseQuery } from "../../utils/baseQuery"
 
-GetReviews.get('/', async (req: Request, res: Response) => {
-    const { selectedTags, groupName }: string | any = req.query
+GetReviews.get("/", async (req: Request, res: Response) => {
+
+    const { selectedTags, groupName }: string | any = req.query;
     const parsedTags = JSON.parse(selectedTags);
+    const cacheKey = generateReviewCache(req);
 
     try {
-        let reviews;
-        if (parsedTags) {
-
-            if (parsedTags.length > 0) {
-                reviews = await prisma.review.findMany({
-                    where: {
-                        tags: {
-                            some: {
-                                name: {
-                                    in: parsedTags,
+        const reviews = await prisma.review.findMany({
+            where: {
+                AND: [
+                    groupName !== "null" ? { groupName } : {},
+                    parsedTags && parsedTags.length > 0
+                        ? {
+                            tags: {
+                                some: {
+                                    name: {
+                                        in: parsedTags,
+                                    },
                                 },
                             },
-                        },
-                    },
-                    ...baseQuery,
-                });
-            } else {
-                reviews = await prisma.review.findMany(baseQuery);
-            }
-        } else if (groupName !== "null") {
-            reviews = await prisma.review.findMany({
-                where: { groupName },
-                ...baseQuery,
-            });
-        } else {
-            reviews = await prisma.review.findMany(baseQuery);
-        }
-
+                        }
+                        : {},
+                ],
+            },
+            ...baseQuery,
+        });
+    
+        await redis.set(cacheKey, JSON.stringify(reviews));
         res.json(reviews);
+        
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching reviews.' });
     }
-});
+    
+})
 
 export { GetReviews };
