@@ -10,14 +10,13 @@ removeReview.delete('/', authenticateUser, async (req: any, res: Response): Prom
     if(req.user || req.admin){
         try {
             const { id } = req.body
-            const deletedReview = await prisma.review.delete({
-                where: { id }
-            });
+            const deletedReview = await prisma.review.delete({ where: { id } });
         
             return res.json(`Review with ID ${deletedReview.id} has been deleted.`);
         } catch (error) {
             res.status(500).json(error);
         }
+
     } else {
         res.json("Unauthorized user")
     }
