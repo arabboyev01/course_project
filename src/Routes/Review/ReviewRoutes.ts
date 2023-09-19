@@ -10,31 +10,37 @@ const prisma = new PrismaClient();
 
 ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Request | any, res: Response) => {
 
-    const { name, groupName, tags, reviewText, userId } = req.body;
-    const tagsArray = JSON.parse(tags);
-    const parseUser = parseInt(userId)
-    const tagIds: any = await tagsQuery(tagsArray)
-
     try {
-    const fileBuffer = req.file.buffer;
-    const originalFileName = req.file.originalname
 
-    const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName);
+        const { name, groupName, tags, reviewText, userId } = req.body;
+        const tagsArray = JSON.parse(tags);
+        const parsedId = parseInt(userId)
+        const tagIds: any = await tagsQuery(tagsArray)
+        const user = await prisma.user.findUnique({where: {id: req.user}})
 
-    const review = await prisma.review.create({
-        data: {
-            name,
-            groupName,
-            tags: {
-                connect: tagIds.map((tagId: number) => ({ id: tagId })),
-            },
-            reviewText,
-            imageUrl,
-            userId: parseUser,
-        },
-    });
+        if(user){
+            const fileBuffer = req.file.buffer;
+            const originalFileName = req.file.originalname
+            
+            const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName);            
+            const review = await prisma.review.create({
+                data: {
+                    name,
+                    groupName,
+                    tags: {
+                        connect: tagIds.map((tagId: number) => ({ id: tagId })),
+                    },
+                    reviewText,
+                    imageUrl,
+                    userId: req.admin ? parsedId: req.user,
+                },
+            });
+            
+            res.json(review);
+        } else {
+            res.json("Unauthorized user")
+        }
 
-    res.json(review);
     } catch (error) {
         return res.status(500).json(error);
     }
