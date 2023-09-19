@@ -1,21 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { Secret } from 'jsonwebtoken';
+import { PrismaClient } from "@prisma/client";
 
-const authenticateUser = function (req: Request | any, res: Response, next: NextFunction) {
+const prisma = new PrismaClient();
 
+const authenticateUser = async function(req: Request | any, res: Response, next: NextFunction) {
     const token = req.headers.authorization;
     try {
-        const decodedToken: any = verifyToken(token)
+        const decodedToken: any = await verifyToken(token)
         req.user = decodedToken.userId;
-        req.admin = decodedToken.userType === "ADMIN"
+        const singleUser = await prisma.user.findUnique({ where: { id: decodedToken.userId } })
+
+        req.admin = singleUser?.userType === "ADMIN"
 
         next();
     } catch (error) {
-        return res.status(401).json({error: 'Unauthorized'});
+        return res.status(401).json({ error: 'Unauthorized' });
     }
 }
 
-function verifyToken(token: string | any) {
+async function verifyToken(token: string | any) {
 
     const secretKey: Secret | any = process.env.JWT_SECRET_KEY;
 

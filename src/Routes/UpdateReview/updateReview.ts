@@ -10,7 +10,7 @@ updateReview.put('/', authenticateUser, async (req: Request | any, res: Response
     const { name, reviewText, groupName, tags, reviewId } = req.body;
     try {
         const singleReview = await prisma.review.findUnique({ where: { id: reviewId }})
-
+    
         if (req.user === singleReview?.userId || req.admin) {
             const tagIds: any = await tagsQuery(tags)
             const updatedReview = await prisma.review.update({

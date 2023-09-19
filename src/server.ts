@@ -3,7 +3,7 @@ import cors from "cors"
 import { signUpRoute } from './Routes/SignUp/SignUp';
 import { loginRoute } from './Routes/Login/Login';
 import { ReviewRoutes } from "./Routes/Review/ReviewRoutes"
-import { Users } from "./Routes/Users/users";
+import { users } from "./Routes/Users/users";
 import { GetReviews } from "./Routes/Review/GetReviews"
 import { GetTags } from "./Routes/Tags/Tags"
 import { getUserToken } from "./Routes/GithubAuth/githubAuth"
@@ -23,6 +23,8 @@ import { removeReview } from "./Routes/Remove/RemoveReview"
 import { udateReveiwImage } from "./Routes/UpdateImage/updateReviewImage"
 import { getLike } from "./Routes/Likes/getLikes"
 import { updateReview } from "./Routes/UpdateReview/updateReview"
+import { highRate } from "./Routes/Review/HighRate" 
+import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -35,7 +37,7 @@ app.listen(port, () => console.log(`Server is running on port ${port}`));
 app.use('/api/register', signUpRoute)
 app.use('/api/login', loginRoute)
 app.use("/api/review", ReviewRoutes)
-app.use("/api/users", Users)
+app.use("/api/users", users)
 app.use("/api/all-reviews", GetReviews)
 app.use("/api/tags", GetTags)
 app.use("/getAccessToken", getUserToken)
@@ -55,3 +57,5 @@ app.use("/api/update-image-review", udateReveiwImage)
 app.use('/api/delete-review', removeReview)
 app.use('/api/like-credentials', getLike)
 app.use('/api/review-update', updateReview)
+app.use('/api/high-rate-review', highRate)
+app.use('/api/single-user-like', singleUserLike)
