@@ -12,7 +12,7 @@ myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) =>
 
     const userId = req.user;
     const cacheKey = generateUserReviewCacheKey(req);
-    
+
     try {
         const cachedData = await redis.get(cacheKey);
 
@@ -47,6 +47,5 @@ myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) =>
         return res.status(500).json({ message: 'Internal server error' });
     }
 });
-
 
 export { myReveiw }
