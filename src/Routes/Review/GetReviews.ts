@@ -14,33 +14,39 @@ GetReviews.get("/", async (req: Request, res: Response) => {
     const cacheKey = generateReviewCache(req);
 
     try {
-        const reviews = await prisma.review.findMany({
-            where: {
-                AND: [
-                    groupName !== "null" ? { groupName } : {},
-                    parsedTags && parsedTags.length > 0
-                        ? {
-                            tags: {
-                                some: {
-                                    name: {
-                                        in: parsedTags,
+        const cachedData = await redis.get(cacheKey);
+        if (cachedData) {
+            const parsedData = JSON.parse(cachedData);
+            
+            return res.json(parsedData);
+        } else {
+
+            const reviews = await prisma.review.findMany({
+                where: {
+                    AND: [
+                        groupName !== "null" ? { groupName } : {},
+                        parsedTags && parsedTags.length > 0
+                            ? {
+                                tags: {
+                                    some: {
+                                        name: {
+                                            in: parsedTags,
+                                        },
                                     },
                                 },
-                            },
-                        }
-                        : {},
-                ],
-            },
-            ...baseQuery,
-        });
-    
-        await redis.set(cacheKey, JSON.stringify(reviews));
-        res.json(reviews);
-        
+                            }
+                            : {},
+                    ],
+                },
+                ...baseQuery,
+            });
+
+            await redis.set(cacheKey, JSON.stringify(reviews));
+            res.json(reviews);
+        }
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching reviews.' });
     }
-    
 })
 
 export { GetReviews };

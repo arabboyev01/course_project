@@ -40,6 +40,7 @@ model Review {
   ratings    Rating[]
   grade  Float      @default(0)
   likes      Like[]
+  isLiked  Boolean  @default(false)
   createdAt  DateTime  @default(now())
   comments Comment[] 
   userId     Int
@@ -61,7 +62,6 @@ model Like {
   id            Int      @id @default(autoincrement())
   userId        Int
   reviewId      Int
-  isLiked   Boolean 
   user          User     @relation(fields: [userId], references: [id])
   review        Review   @relation(fields: [reviewId], references: [id])
 

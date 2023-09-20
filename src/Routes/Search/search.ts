@@ -1,28 +1,29 @@
 import express, { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client'
 import { SeachQueryParams } from "../../types"
+import { retrieveDataFromDatabase } from "./retriveData"
 
-const prisma = new PrismaClient();
 const SearchReq = express.Router();
 
 SearchReq.get("/", async (req: Request, res: Response) => {
-  try {
-      const { name, groupName }: SeachQueryParams = req.query
-  
-      const query = {
-          where: {
-              name: name ? { contains: name} : undefined,
-              groupName: groupName ? { contains: groupName } : undefined,
-          }
-      };
-  
-      const reviews = await prisma.review.findMany(query);
-      res.json(reviews);
-      
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while fetching reviews.' });
-  }
+    try {
+        const { name, groupName, latest }: SeachQueryParams = req.query;
+        
+        const allReviews = await retrieveDataFromDatabase();
+        const lowercaseAllReviewNames = allReviews.map(review => review.name.toLowerCase());
+        
+        const filteredReviews = allReviews.filter((review, index) => {
+            const lowercaseName = lowercaseAllReviewNames[index];
+            return (
+                (!name || lowercaseName.includes(name.toLowerCase())) &&
+                (!groupName || review.groupName.toLowerCase().includes(groupName.toLowerCase()))
+            );
+        });
+        
+        res.json(filteredReviews);
+        
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching reviews.' });
+    }
 })
 
 export { SearchReq }

@@ -1,15 +1,19 @@
 import { Request } from "express";
+import { v4 as uuidv4 } from 'uuid';
 
 function generateReviewCache(req: Request) {
     const { selectedTags, groupName }: string | any = req.query;
-    const endpoint = req.originalUrl;
-
-    let cacheKey = `reviews:${endpoint}`;
-
-    if (selectedTags) cacheKey += `:tags=${selectedTags}`;
-
-    if (groupName !== "null") cacheKey += `:group=${groupName}`;
+    const selectedTagsString = JSON.stringify(selectedTags);
+    const filteredGroup = groupName !== "null" ? groupName : "null";
+    
+    const uniqueKey = uuidv4();
+    
+    const endpointPath = req.originalUrl.split('?')[0];
+    
+    let cacheKey = `${endpointPath}?selectedTags=${selectedTagsString}&groupName=${filteredGroup}&uuid=${uniqueKey}`;
+    
     return cacheKey;
+
 }
 
 function generateUserReviewCacheKey(req: Request|any) {
@@ -21,4 +25,11 @@ function generateUserReviewCacheKey(req: Request|any) {
     return cacheKey;
 }
 
-export { generateReviewCache, generateUserReviewCacheKey }
+function generateSingleReviewCacheKey(id: number|any) {
+    
+    const cacheKey = `review:${id}`;
+    
+    return cacheKey;
+}
+
+export { generateReviewCache, generateUserReviewCacheKey, generateSingleReviewCacheKey }

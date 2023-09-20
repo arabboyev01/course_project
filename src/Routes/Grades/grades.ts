@@ -1,6 +1,9 @@
 import express, { Response } from 'express';
 import { PrismaClient } from '@prisma/client'
 import { authenticateUser } from '../../AuthUser/AuthenticateUser'
+import { fetchUpdatedReviewData } from "../../UpdatedFetchReq"
+import { redis } from "../../RedisConnection"
+import { generateReviewCache } from "../../RedisConnection/GeneratedCache"
 
 const prisma = new PrismaClient();
 const gradeReq = express.Router();
@@ -8,17 +11,17 @@ const gradeReq = express.Router();
 gradeReq.post('/', authenticateUser, async (req: any, res: Response): Promise<any> => {
     try {
         const {reviewId, rating} = await req.body;
+        const cacheKey = generateReviewCache(req);
         const userId = typeof req.user !== 'undefined' ? req.user : undefined;
+
+        const updatedReview = await fetchUpdatedReviewData(reviewId);
 
         if (userId === undefined) {
             return res.status(403).json("please_login_first")
         };
 
         const existingRating = await prisma.rating.findFirst({
-            where: {
-                userId,
-                reviewId,
-            },
+            where: { userId, reviewId },
         });
 
         if (existingRating) {
@@ -57,6 +60,7 @@ gradeReq.post('/', authenticateUser, async (req: any, res: Response): Promise<an
                 grade: averageRating,
             },
         });
+        await redis.set(cacheKey, JSON.stringify(updatedReview));
 
         res.status(201).json({message: 'Rating updated successfully'});
     } catch (error) {

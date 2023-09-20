@@ -1,6 +1,7 @@
 export interface SeachQueryParams {
-    name?: string;
-    groupName?: string;
+    name?: string
+    groupName?: string
+    latest?: string
 }
 
 export interface BaucketParams {
