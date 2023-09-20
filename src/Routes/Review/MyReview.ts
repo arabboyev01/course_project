@@ -4,11 +4,13 @@ import { authenticateUser } from "../../AuthUser/AuthenticateUser"
 import { query } from "./query"
 import { generateUserReviewCacheKey } from "../../RedisConnection/GeneratedCache"
 import { redis } from "../../RedisConnection"
+import { clause } from "../../utils/filterLogic"
 
 const prisma = new PrismaClient();
 const myReveiw = express.Router();
 
 myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) => {
+    const { selectedTags, filterName, sortName }: string | any = req.query;
     const cacheKey = generateUserReviewCacheKey(req)
 
     try {
@@ -19,16 +21,28 @@ myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) =>
             return res.json(parsedData);
         } else {
             const isAdmin = await prisma.user.findUnique({ where: { id: req.user } });
-
+            const whereClause = clause(filterName, JSON.parse(selectedTags))
             let reviews;
 
             if (isAdmin ?.userType === "ADMIN") {
                 reviews = await prisma.review.findMany({
+                    where: whereClause,
+                    orderBy: [
+                        sortName === 'asc' ? { name: 'asc' } : sortName === 'desc' ? { name: 'desc' } : {},
+                    ],
                     ...query,
                 });
             } else {
                 reviews = await prisma.review.findMany({
-                    where: { userId: req.user },
+                    where: {
+                        AND: [
+                            { userId: req.user },
+                            whereClause
+                        ]
+                    },
+                    orderBy: [
+                        sortName === 'asc' ? { name: 'asc' } : sortName === 'desc' ? { name: 'desc' } : {},
+                    ],
                     ...query,
                 });
             }
