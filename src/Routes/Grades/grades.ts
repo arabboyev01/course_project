@@ -17,7 +17,7 @@ gradeReq.post('/', authenticateUser, async (req: Request|any, res: Response): Pr
            
         if (userId === undefined) {
             return res.status(403).json("please_login_first")
-        };
+        }
 
         const existingRating = await prisma.rating.findFirst({
             where: { userId, reviewId },

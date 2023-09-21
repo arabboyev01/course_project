@@ -20,12 +20,10 @@ export const clause = (filterName: string, parsedTags: any) => {
         endDate.setMonth(currentDate.getMonth() + 1, 0); 
     }
     
-    const whereClause = {
+    return {
         AND: [
             parsedTags && parsedTags.length > 0 ? { tags: { some: { name: { in: parsedTags } } } } : {},
             startDate && endDate ? { createdAt: { gte: startDate,  lte: endDate } } : {},
         ],
     };
-
-    return whereClause;
 }

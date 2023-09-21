@@ -5,6 +5,7 @@
     "outDir": "",
     "rootDir": "./src",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strictPropertyInitialization": false
   }
 }
