@@ -29,16 +29,11 @@ import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
 const app = express();
 const port = process.env.PORT || 3002;
 
-const corsOptions = {
-    origin: 'https://main.d1s24752uogjcv.amplifyapp.com/',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-};
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(express.json());
 app.listen(port, () => console.log(`Server is running on port ${port}`));
-
 
 app.use('/api/register', signUpRoute)
 app.use('/api/login', loginRoute)
