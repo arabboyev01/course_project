@@ -32,8 +32,8 @@ app.use(cors());
 app.use(
     helmet.contentSecurityPolicy({
         directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", 'http://13.49.75.142:3002'],
+            defaultSrc: ["'self'", "'unsafe-inline'", 'http://13.49.75.142:3002'],
+            scriptSrc: ["'self'", 'https://main.d1s24752uogjcv.amplifyapp.com', 'unsafe-inline'],
         },
     })
 );
