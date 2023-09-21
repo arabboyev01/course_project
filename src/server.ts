@@ -28,15 +28,14 @@ import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
 
 const app = express();
 const port = process.env.PORT || 3002;
-app.use(cors());
-app.use(
-    helmet.contentSecurityPolicy({
-        directives: {
-            defaultSrc: ["'self'", "'unsafe-inline'", 'http://13.49.75.142:3002'],
-            scriptSrc: ["'self'", 'https://main.d1s24752uogjcv.amplifyapp.com', 'unsafe-inline'],
-        },
-    })
-);
+
+const corsOptions = {
+    origin: 'https://main.d1s24752uogjcv.amplifyapp.com/',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.listen(port, () => console.log(`Server is running on port ${port}`));
 
