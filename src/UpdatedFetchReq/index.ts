@@ -4,16 +4,14 @@ const prisma = new PrismaClient();
 
 async function fetchUpdatedReviewData(reviewId: number) {
     try {
-        const review = await prisma.review.findFirst({
+        const review = await prisma.review.findUnique({
             where: { id: reviewId },
             ...baseQuery
         });
 
-        if (review) {
-            return review;
-        } else {
-            throw new Error(`Review with ID ${reviewId} not found`);
-        }
+        if (review) return review;
+         else throw new Error(`Review with ID ${reviewId} not found`);
+    
     } catch (error) {
         throw error;
     }

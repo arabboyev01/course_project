@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import { PrismaClient } from '@prisma/client'
 import { authenticateUser } from "../../AuthUser/AuthenticateUser"
 import { redis } from "../../RedisConnection"
+import { generateReviewCache } from "../../RedisConnection/GeneratedCache"
 
 const prisma = new PrismaClient();
 const removeReview = express.Router();
@@ -11,9 +12,10 @@ removeReview.delete('/', authenticateUser, async (req: any, res: Response): Prom
     if(req.user || req.admin){
         try {
             const { id } = req.body
+            console.log(id)
             const deletedReview = await prisma.review.delete({ where: { id } });
             
-            const cacheKey = `reviews:${id}:user:${req.user}`;
+            const cacheKey = generateReviewCache(req.hostname)
             await redis.del(cacheKey);
         
             return res.json(`Review with ID ${deletedReview.id} has been deleted.`);

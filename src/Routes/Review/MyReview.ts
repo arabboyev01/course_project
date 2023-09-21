@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { PrismaClient } from "@prisma/client";
 import { authenticateUser } from "../../AuthUser/AuthenticateUser"
 import { query } from "./query"
-import { generateUserReviewCacheKey } from "../../RedisConnection/GeneratedCache"
+import { generateReviewCache } from "../../RedisConnection/GeneratedCache"
 import { redis } from "../../RedisConnection"
 import { clause } from "../../utils/filterLogic"
 
@@ -11,7 +11,7 @@ const myReveiw = express.Router();
 
 myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) => {
     const { selectedTags, filterName, sortName }: string | any = req.query;
-    const cacheKey = generateUserReviewCacheKey(req)
+    const cacheKey = generateReviewCache(req.hostname)
 
     try {
         const cachedData = await redis.get(cacheKey);

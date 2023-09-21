@@ -12,7 +12,7 @@ GetReviews.get("/", async (req: Request, res: Response) => {
 
     const { selectedTags, filterName, sortName }: string | any = req.query;
     const parsedTags = JSON.parse(selectedTags);
-    const cacheKey = generateReviewCache(req);
+    const cacheKey = generateReviewCache(req.hostname);
     
     try {
         const cachedData = await redis.get(cacheKey);

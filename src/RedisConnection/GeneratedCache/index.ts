@@ -1,22 +1,27 @@
 import { Request } from "express";
-import { v4 as uuidv4 } from 'uuid';
+import crypto from "crypto"
 
-function generateReviewCache(req: Request) {
-    const { selectedTags, groupName }: string | any = req.query;
-    const selectedTagsString = JSON.stringify(selectedTags);
-    const filteredGroup = groupName !== "null" ? groupName : "null";
-    
-    const uniqueKey = uuidv4();
-    
-    const endpointPath = req.originalUrl.split('?')[0];
-    
-    let cacheKey = `${endpointPath}?selectedTags=${selectedTagsString}&groupName=${filteredGroup}&uuid=${uniqueKey}`;
-    
-    return cacheKey;
+function generateReviewCache(params: any) {
 
+    const normalizedParams: any = {};
+    
+    for (const key in params) {
+        if (params[key] === "null" || params[key] === "") {
+            normalizedParams[key] = "empty";
+        } else {
+            normalizedParams[key] = params[key];
+        }
+    }
+    
+    const keyData = JSON.stringify(normalizedParams);
+    
+    const uniqueKey = crypto.createHash('md5').update(keyData).digest('hex');
+    
+    return uniqueKey;
+    
 }
 
-function generateUserReviewCacheKey(req: Request|any) {
+function generateUserReviewCacheKey(req: Request | any) {
     const { productId }: string | any = req.query;
     const endpoint = req.originalUrl;
 
@@ -25,11 +30,17 @@ function generateUserReviewCacheKey(req: Request|any) {
     return cacheKey;
 }
 
-function generateSingleReviewCacheKey(id: number|any) {
-    
-    const cacheKey = `review:${id}`;
-    
+function generateSingleReviewCacheKey(id: number) {
+
+    const cacheKey = `/api/single-review?id=${id}`;
+
     return cacheKey;
 }
 
-export { generateReviewCache, generateUserReviewCacheKey, generateSingleReviewCacheKey }
+function generateRatingCache(reviewId: number, userId: number) {
+    const cacheKey = `/api/ratings?reviewId=${reviewId}&userId=${userId}`;
+
+    return cacheKey;
+}
+
+export { generateReviewCache, generateUserReviewCacheKey, generateSingleReviewCacheKey, generateRatingCache }
