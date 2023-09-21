@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from "cors"
+import helmet from "helmet"
 import { signUpRoute } from './Routes/SignUp/SignUp';
 import { loginRoute } from './Routes/Login/Login';
 import { ReviewRoutes } from "./Routes/Review/ReviewRoutes"
@@ -28,7 +29,14 @@ import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
 const app = express();
 const port = process.env.PORT || 3002;
 app.use(cors());
-// app.use(express.static('uploads'))
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", 'http://13.49.75.142:3002'],
+        },
+    })
+);
 app.use(express.json());
 app.listen(port, () => console.log(`Server is running on port ${port}`));
 
