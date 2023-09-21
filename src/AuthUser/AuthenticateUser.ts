@@ -11,7 +11,9 @@ const authenticateUser = async function(req: Request | any, res: Response, next:
         req.user = decodedToken.userId;
         const singleUser = await prisma.user.findUnique({ where: { id: decodedToken.userId } })
 
-        req.admin = singleUser?.userType === "ADMIN"
+        if(singleUser){
+            req.admin = singleUser?.userType === "ADMIN"
+        }
 
         next();
     } catch (error) {

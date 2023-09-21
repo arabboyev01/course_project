@@ -1,4 +1,3 @@
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -11,23 +10,68 @@ generator client {
 model User {
   id          Int      @id @default(autoincrement())
   username    String   @unique
-  email       String   @unique
+  email       String?
   firstName   String
   lastName    String
   hashPassword String
   reviews     Review[]
+  likedBy     Like[] 
+  imageUrl   String?  
+  comments Comment[] 
+  ratings     Rating[] 
+  userType    UserType @default(USER)
+  @@map("users")
+}
+
+enum UserType {
+  USER
+  ADMIN
 }
 
 model Review {
   id         Int      @id @default(autoincrement())
   name       String
-  groupName  String   // "Movies", "Books", "Games", etc.
+  groupName  String 
   tags       Tag[]
   reviewText String
-  imageUrl   String?  // Optional image URL
-  grade      Int      @default(0)
+  imageUrl   String?  
+  ratings    Rating[]
+  grade  Float      @default(0)
+  isLiked    Boolean    @default(false) 
+  likes      Like[]
+  createdAt  DateTime  @default(now())
+  comments Comment[] 
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
+}
+
+model Rating {
+  id       Int    @id @default(autoincrement())
+  ratingNum   Int
+  reviewId Int
+  userId   Int
+  review   Review @relation(fields: [reviewId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
+  @@unique([reviewId, userId])
+}
+
+model Like {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  reviewId      Int
+  user          User     @relation(fields: [userId], references: [id])
+  review        Review   @relation(fields: [reviewId], references: [id])
+  @@unique([userId, reviewId])
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  text      String
+  userId    Int
+  reviewId  Int
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  review    Review    @relation(fields: [reviewId], references: [id])
 }
 
 model Tag {

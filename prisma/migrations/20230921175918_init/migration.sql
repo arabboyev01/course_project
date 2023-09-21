@@ -23,6 +23,7 @@ CREATE TABLE "Review" (
     "reviewText" TEXT NOT NULL,
     "imageUrl" TEXT,
     "grade" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "isLiked" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" INTEGER NOT NULL,
 
@@ -44,7 +45,6 @@ CREATE TABLE "Like" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "reviewId" INTEGER NOT NULL,
-    "isLiked" BOOLEAN NOT NULL,
 
     CONSTRAINT "Like_pkey" PRIMARY KEY ("id")
 );
