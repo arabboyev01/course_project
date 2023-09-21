@@ -1,9 +1,6 @@
 import express, { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client'
 import { authenticateUser } from "../../AuthUser/AuthenticateUser"
-import { redis } from "../../RedisConnection"
-import { fetchUpdatedReviewData } from "../../UpdatedFetchReq"
-
 const prisma = new PrismaClient();
 const likeReq = express.Router();
 
@@ -16,8 +13,7 @@ likeReq.post('/', authenticateUser, async (req: Request|any, res: Response): Pro
     }
     
    try {
-       const updatedReview = await fetchUpdatedReviewData(reviewId);
-       const cacheKey = `review:${reviewId}`;
+
        const existingLike = await prisma.like.findFirst({
            where: {
                userId: userId,
@@ -42,7 +38,6 @@ likeReq.post('/', authenticateUser, async (req: Request|any, res: Response): Pro
                data: { isLiked: true }
            });
 
-           await redis.set(cacheKey, JSON.stringify(updatedReview));
 
            res.status(201).json(like);
        }
