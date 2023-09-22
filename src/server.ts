@@ -1,7 +1,5 @@
 import express from 'express';
 import cors from "cors"
-import fs from "fs"
-import https from "https"
 import { signUpRoute } from './Routes/SignUp/SignUp';
 import { loginRoute } from './Routes/Login/Login';
 import { ReviewRoutes } from "./Routes/Review/ReviewRoutes"
@@ -32,14 +30,8 @@ const port = process.env.PORT || 3002;
 
 app.use(cors());
 
-const privateKey = fs.readFileSync('../keys/key.pem', 'utf8');
-const certificate = fs.readFileSync('../keys/cert.pem', 'utf8');
-
-const credentials = { key: privateKey, cert: certificate };
-const httpsServer = https.createServer(credentials, app);
-
 app.use(express.json());
-httpsServer.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 app.use('/api/register', signUpRoute)
 app.use('/api/login', loginRoute)
