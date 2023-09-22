@@ -1,12 +1,14 @@
 {
   "apps": [
     {
-      "name": "my-server",
+      "name": "server",
       "script": "server.js",
-      "cwd": "./dist",
+      "cwd": "",
+      "instances": "max",
+      "exec_mode": "cluster",
       "env": {
         "NODE_ENV": "production",
-        "PORT": 3002
+        "PORT": 3000
       }
     }
   ]
