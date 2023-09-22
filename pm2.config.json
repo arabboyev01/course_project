@@ -1,0 +1,13 @@
+{
+  "apps": [
+    {
+      "name": "my-server",
+      "script": "server.js",
+      "cwd": "./dist",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 3002
+      }
+    }
+  ]
+}
