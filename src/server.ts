@@ -33,7 +33,7 @@ const port = process.env.PORT || 3002;
 app.use(cors());
 
 const privateKey = fs.readFileSync('../keys/key.pem', 'utf8');
-const certificate = fs.readFileSync('../cert.pem', 'utf8');
+const certificate = fs.readFileSync('../keys/cert.pem', 'utf8');
 
 const credentials = { key: privateKey, cert: certificate };
 const httpsServer = https.createServer(credentials, app);
