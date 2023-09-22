@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from '.prisma/client';
+import { Review } from "../../types"
 
 const highRate = express.Router();
 const prisma = new PrismaClient();
@@ -10,7 +11,7 @@ highRate.get('/', async (req: Request, res: Response) => {
             orderBy: {
                 grade: "desc",
             },
-            take: 5,
+            take: 4,
         });
 
         res.status(200).json(topFiveReviews);
