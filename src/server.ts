@@ -25,18 +25,10 @@ import { udateReveiwImage } from "./Routes/UpdateImage/updateReviewImage"
 import { updateReview } from "./Routes/UpdateReview/updateReview"
 import { highRate } from "./Routes/Review/HighRate" 
 import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
-import { appConfig } from "./appConfig"
 
 const app = express();
 const port = process.env.PORT || 3002;
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', appConfig().origins);
-    res.header('Access-Control-Allow-Headers', 'content-type, Authorization, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    next();
-});
 app.use(cors());
 
 app.use(express.json());
