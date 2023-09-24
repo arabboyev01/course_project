@@ -1,5 +1,5 @@
 import express from 'express';
-import cors from "cors"
+// import cors from "cors"
 import { signUpRoute } from './Routes/SignUp/SignUp';
 import { loginRoute } from './Routes/Login/Login';
 import { ReviewRoutes } from "./Routes/Review/ReviewRoutes"
@@ -25,12 +25,12 @@ import { updateReview } from "./Routes/UpdateReview/updateReview"
 import { highRate } from "./Routes/Review/HighRate" 
 import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
 import { updateUserStatus } from "./Routes/UpdateUser/StatusUpdate"
-import { corsOptions } from "./utils/cors.configure"
+// import { corsOptions } from "./utils/cors.configure"
 
 const app = express();
 const port = process.env.PORT || 3002;
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.use(express.json());
 app.listen(port, () => console.log(`Server is running on port ${port}`));
