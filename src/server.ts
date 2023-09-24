@@ -1,6 +1,4 @@
 import express from 'express';
-import http from 'http';
-import httpProxy from 'http-proxy';
 import cors from 'cors'
 import { signUpRoute } from './Routes/SignUp/SignUp';
 import { loginRoute } from './Routes/Login/Login';
@@ -30,27 +28,13 @@ import { updateUserStatus } from "./Routes/UpdateUser/StatusUpdate"
 
 const app = express();
 const port = process.env.PORT || 3002;
-const corsOptions = {
-    origin: 'https://www.abbosbekwebdev.uz',
-};
 
-app.use(cors(corsOptions))
 
-const proxy = httpProxy.createProxyServer({});
-const targetURL = 'http://13.49.75.142:3002';
+app.use(cors())
 
-const handleRequest = (req: any, res: any) => {
-    proxy.web(req, res, { target: targetURL });
-};
-
-const httpServer = http.createServer(handleRequest);
-
-httpServer.listen(8080, () => {
-    console.log('HTTP Server is running on port 8080');
-});
 
 app.use(express.json());
-// app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 app.use('/api/register', signUpRoute)
 app.use('/api/login', loginRoute)
