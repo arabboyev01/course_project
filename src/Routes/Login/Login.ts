@@ -10,25 +10,25 @@ loginRoute.post('/', async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     try {
-        const user = await prisma.user.findUnique({ where: { username } });
+        const singleUser = await prisma.user.findUnique({ where: { username } });
 
-        if (!user) {
+        if (!singleUser) {
             throw new Error
         }
 
-        const passwordMatches = await bcrypt.compare(password, user.hashPassword);
+        const passwordMatches = await bcrypt.compare(password, singleUser.hashPassword);
 
         if (!passwordMatches) {
              throw new Error
         }
 
-        if (passwordMatches && user.status === 'block') {
+        if (passwordMatches && singleUser.status === 'block') {
             return res.json('user is blocked')
         }
 
-        const token = jwt.sign({ userId: user.id }, 'course_project');
+        const token = jwt.sign({ userId: singleUser.id }, 'course_project');
 
-        res.json({ user, token });
+        res.json({ singleUser, token });
     } catch (error) {
         res.status(500).send({ error: "An error occurred during login." });
     }
