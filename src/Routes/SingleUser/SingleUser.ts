@@ -5,11 +5,9 @@ import { authenticateUser } from "../../AuthUser/AuthenticateUser"
 const prisma = new PrismaClient();
 const singleUser = express.Router();
 
-singleUser.get('/', authenticateUser, async (req: Request| any, res: Response): Promise<any> => {
-    const userId = req.user;
-    
+singleUser.get('/', authenticateUser, async (req: Request| any, res: Response): Promise<any> => {    
     try {
-        const user = await prisma.user.findUnique({ where: { id: userId } })
+        const user = await prisma.user.findUnique({ where: { id: req.user } })
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

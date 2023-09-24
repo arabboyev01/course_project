@@ -24,7 +24,7 @@ signUpRoute.post('/', async (req: Request, res: Response): Promise<any> => {
 
         if (user.id === 1) {
             await prisma.user.update({
-                where: { id: 1 },//@ts-ignore
+                where: { id: 1 },
                 data: { userType: 'ADMIN' }
             });
         }

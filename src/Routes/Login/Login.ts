@@ -19,7 +19,11 @@ loginRoute.post('/', async (req: Request, res: Response) => {
         const passwordMatches = await bcrypt.compare(password, user.hashPassword);
 
         if (!passwordMatches) {
-            throw new Error
+             throw new Error
+        }
+
+        if (passwordMatches && user.status === 'block') {
+            return res.json('user is blocked')
         }
 
         const token = jwt.sign({ userId: user.id }, 'course_project');

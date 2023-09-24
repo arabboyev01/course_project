@@ -13,6 +13,10 @@ GetAuthThirdPartyApi.post("/", async (req: Request, res: Response) => {
 
     try {
         const existingUser = await prisma.user.findUnique({ where: { username } });
+        
+        if (existingUser && existingUser.status === 'block') {
+            return res.json('user is blocked')
+        }
 
         if (existingUser) {
 
@@ -37,7 +41,7 @@ GetAuthThirdPartyApi.post("/", async (req: Request, res: Response) => {
 
             if (newUser.id === 1) {
                 await prisma.user.update({
-                    where: { id: 1 },//@ts-ignore
+                    where: { id: 1 },
                     data: { userType: 'ADMIN' }
                 });
             }
