@@ -1,5 +1,7 @@
 import express from 'express';
-// import cors from "cors"
+import http from 'http';
+import httpProxy from 'http-proxy';
+import fs from 'fs';
 import { signUpRoute } from './Routes/SignUp/SignUp';
 import { loginRoute } from './Routes/Login/Login';
 import { ReviewRoutes } from "./Routes/Review/ReviewRoutes"
@@ -25,12 +27,21 @@ import { updateReview } from "./Routes/UpdateReview/updateReview"
 import { highRate } from "./Routes/Review/HighRate" 
 import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
 import { updateUserStatus } from "./Routes/UpdateUser/StatusUpdate"
-// import { corsOptions } from "./utils/cors.configure"
 
 const app = express();
 const port = process.env.PORT || 3002;
 
-// app.use(cors(corsOptions));
+const proxy = httpProxy.createProxyServer({});
+const targetURL = 'http://13.49.75.142:3002';
+
+const handleRequest = (req: any, res: any) => {
+    proxy.web(req, res, { target: targetURL });
+};
+const httpServer = http.createServer(handleRequest);
+
+httpServer.listen(80, () => {
+    console.log('HTTP Server is running on port 80');
+});
 
 app.use(express.json());
 app.listen(port, () => console.log(`Server is running on port ${port}`));
