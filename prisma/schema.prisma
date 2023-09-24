@@ -20,6 +20,7 @@ model User {
   comments Comment[] 
   ratings     Rating[] 
   userType    UserType @default(USER)
+  status      String   @default("active") 
   @@map("users")
 }
 

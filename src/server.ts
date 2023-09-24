@@ -24,6 +24,7 @@ import { udateReveiwImage } from "./Routes/UpdateImage/updateReviewImage"
 import { updateReview } from "./Routes/UpdateReview/updateReview"
 import { highRate } from "./Routes/Review/HighRate" 
 import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
+import { updateUserStatus } from "./Routes/UpdateUser/StatusUpdate"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -57,3 +58,4 @@ app.use('/api/delete-review', removeReview)
 app.use('/api/review-update', updateReview)
 app.use('/api/high-rate-review', highRate)
 app.use('/api/single-user-like', singleUserLike)
+app.use('/api/update-user-status', updateUserStatus)

@@ -11,6 +11,7 @@ CREATE TABLE "users" (
     "hashPassword" TEXT NOT NULL,
     "imageUrl" TEXT,
     "userType" "UserType" NOT NULL DEFAULT 'USER',
+    "status" TEXT NOT NULL DEFAULT 'active',
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
