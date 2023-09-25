@@ -9,7 +9,7 @@ singleUserLike.get("/", authenticateUser, async (req: Request | any, res: Respon
     if (req.user) {
         try {
             const likes = await prisma.like.findMany({
-                where: { userId: req.user.id },
+                where: { userId: req.user },
             });
 
             const reviewIds = likes.map((like) => like.reviewId);
@@ -18,8 +18,11 @@ singleUserLike.get("/", authenticateUser, async (req: Request | any, res: Respon
                 where: { id: { in: reviewIds } },
                 ...baseQuery,
             });
-
-            res.status(200).json(reviews);
+            if(reviews.length){
+                res.status(200).json(reviews);
+            } else {
+                res.json('no data')
+            }
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'An error occurred while fetching data' });
