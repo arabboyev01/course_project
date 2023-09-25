@@ -29,7 +29,6 @@ import { updateUserStatus } from "./Routes/UpdateUser/StatusUpdate"
 const app = express();
 const port = process.env.PORT || 3002;
 
-
 app.use(cors())
 
 
