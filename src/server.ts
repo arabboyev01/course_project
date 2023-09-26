@@ -26,6 +26,7 @@ import { highRate } from "./Routes/Review/HighRate"
 import { singleUserLike } from "./Routes/Likes/SinglUserLike/singleUserLike"
 import { updateUserStatus } from "./Routes/UpdateUser/StatusUpdate"
 import { usersLikedReviewId } from "./Routes/Likes/usersLikeReviewId"
+import { sumOfLike } from "./Routes/Likes/sumLike"
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -61,3 +62,4 @@ app.use('/api/high-rate-review', highRate)
 app.use('/api/single-user-like', singleUserLike)
 app.use('/api/update-user-status', updateUserStatus)
 app.use('/api/user-like-reviewid', usersLikedReviewId)
+app.use('/api/like-sum', sumOfLike)
