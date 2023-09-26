@@ -2,8 +2,8 @@
   "apps": [
     {
       "name": "server",
-      "script": "server.js",
-      "cwd": "dist/server.js",
+      "script": "./dist/server.js",
+      "cwd": "/home/ubuntu/course_project",
       "instances": "max",
       "exec_mode": "cluster",
       "env": {
