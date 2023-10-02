@@ -1,12 +1,16 @@
-import express, { Request, Response } from "express";
-import { PrismaClient } from '.prisma/client';
+import express, { Request, Response } from 'express'
+import { PrismaClient } from '.prisma/client'
 
-const getcomment = express.Router();
-const prisma = new PrismaClient();
+const getcomment = express.Router()
+const prisma = new PrismaClient()
 
-getcomment.get("/", async (req: Request, res: Response) => {
+getcomment.get('/', async (req: Request, res: Response) => {
     try {
-        const { reviewId }: any = req.query
+        
+        const reviewId: string | undefined = req.query.reviewId as string | undefined
+
+        if(!reviewId) return res.json('Please provide reviewId')
+
         const reviewID = parseInt(reviewId)
         const response = await prisma.comment.findMany({
             where: { reviewId: reviewID },
@@ -20,11 +24,11 @@ getcomment.get("/", async (req: Request, res: Response) => {
                     },
                 },
             },
-        });
-        res.json(response);
+        })
+        res.json(response)
     } catch (err) {
-        return res.status(500).json(err);
+        return res.status(500).json(err)
     }
-});
+})
 
 export { getcomment }

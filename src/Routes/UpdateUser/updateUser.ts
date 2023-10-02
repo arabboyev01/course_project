@@ -1,22 +1,20 @@
-import express, { Request, Response } from 'express';
-import { PrismaClient } from "@prisma/client";
-import jwt from "jsonwebtoken"
-import { HashingPassword } from "../../HashingPassword/Hashing"
+import express, { Request, Response } from 'express'
+import { PrismaClient } from '@prisma/client'
+import { HashingPassword } from '../../HashingPassword/Hashing'
+import { authenticateUser } from '../../AuthUser/AuthenticateUser'
+import { CustomRequest } from '../../types'
 
-const prisma = new PrismaClient();
-const updateUser = express.Router();
+const prisma = new PrismaClient()
+const updateUser = express.Router()
 
-updateUser.post('/', async (req: Request, res: Response): Promise<any> => {
+updateUser.post('/', authenticateUser, async (req: Request, res: Response) => {
     const { username, firstName, lastName, email, password } = req.body
-    const token: any = req.headers.authorization;
-    const secretKey: any = process.env.JWT_SECRET_KEY;
 
-    const userKey: any = jwt.verify(token, secretKey)
-    const { userId } = userKey;
-    const hashPassword = await HashingPassword(password);
+    const hashPassword = await HashingPassword(password)
+
     try {
         const updatedUser = await prisma.user.update({
-            where: { id: userId },
+            where: { id: (req as CustomRequest).user },
             data: {
                 username,
                 firstName,
@@ -24,11 +22,11 @@ updateUser.post('/', async (req: Request, res: Response): Promise<any> => {
                 email,
                 hashPassword
             },
-        });
+        })
     
-        return res.json(updatedUser);
+        return res.json(updatedUser)
     } catch (error) {
-        res.json(error);
+        res.json(error)
     }
 })
 

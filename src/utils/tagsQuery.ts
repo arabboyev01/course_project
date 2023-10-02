@@ -1,30 +1,30 @@
-import { PrismaClient } from '.prisma/client';
+import { PrismaClient } from '.prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 const tagsQuery = async (tagsArray: string[]) => {
-    const tagIds = [];
+    const tagIds = []
 
     for (const tagName of tagsArray) {
         const existingTag = await prisma.tag.findUnique({
             where: {
                 name: tagName,
             },
-        });
+        })
 
         if (existingTag) {
-            tagIds.push(existingTag.id);
+            tagIds.push(existingTag.id)
         } else {
             const newTag = await prisma.tag.create({
                 data: {
                     name: tagName,
                 },
-            });
-            tagIds.push(newTag.id);
+            })
+            tagIds.push(newTag.id)
         }
     }
 
-    return tagIds;
+    return tagIds
 }
 
-export { tagsQuery };
+export { tagsQuery }

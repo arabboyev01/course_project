@@ -1,34 +1,39 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt, { Secret } from 'jsonwebtoken';
-import { PrismaClient } from "@prisma/client";
+import { Request, Response, NextFunction } from 'express'
+import jwt, { Secret } from 'jsonwebtoken'
+import { PrismaClient } from '@prisma/client'
+import { DecodedToken } from '../types'
+import { JwtPayload } from 'jsonwebtoken'
+import { CustomRequest } from '../types'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-const authenticateUser = async function(req: Request | any, res: Response, next: NextFunction) {
-    const token = req.headers.authorization;
+const authenticateUser = async function(req: Request, res: Response, next: NextFunction) {
+    const token = req.headers.authorization
     try {
-        const decodedToken: any = await verifyToken(token)
-        req.user = decodedToken.userId;
-        const singleUser = await prisma.user.findUnique({ where: { id: decodedToken.userId } })
+        const decodedToken: DecodedToken = await verifyToken(token)
+        if (decodedToken) (req as CustomRequest).user = (decodedToken as JwtPayload).userId
 
-        if(singleUser){
-            req.admin = singleUser?.userType === "ADMIN"
+        const singleUser = await prisma.user.findUnique({ where: { id: (decodedToken as JwtPayload).userId } })
+
+        if (singleUser) {
+            (req as CustomRequest).admin= singleUser?.userType === 'ADMIN'
         }
 
-        next();
+        next()
     } catch (error) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({ error: 'Unauthorized' })
     }
 }
 
-async function verifyToken(token: string | any) {
+async function verifyToken(token: string | undefined) {
 
-    const secretKey: Secret | any = process.env.JWT_SECRET_KEY;
-
+    const secretKey: Secret | undefined = process.env.JWT_SECRET_KEY
     try {
-        return jwt.verify(token, secretKey);
+        if (token && secretKey) return jwt.verify(token, secretKey)
+        else throw new Error()
+
     } catch (error) {
-        return ('Token verification failed:');
+        return ('Token verification failed:')
     }
 }
 

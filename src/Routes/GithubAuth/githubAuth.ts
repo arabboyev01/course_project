@@ -1,54 +1,52 @@
-import axios from "axios"
-import express, { Request, Response } from 'express';
+import axios from 'axios'
+import express, { Request, Response } from 'express'
 
-const getUserToken = express.Router();
-const getGithubUserData = express.Router();
-const GITHUB_CLIENT_ID = "aa74f754bd9f3616aaa2"
-const GITHUB_CLIENT_SECRET_KEY = "98c91f26f587fb6ea747300ad5db871a44aaff75"
+const getUserToken = express.Router()
+const getGithubUserData = express.Router()
+
+const github_client_id = process.env.GITHUB_CLIENT_ID as string
+const github_client_secret = process.env.GITHUB_CLIENT_SECRET_KEY as string
 
 getUserToken.get('/', async (req: Request, res: Response) => {
 
     try {
-        const { code } = req.query;
+        const { code } = req.query
         const params = new URLSearchParams({
-            client_id: GITHUB_CLIENT_ID,
-            client_secret: GITHUB_CLIENT_SECRET_KEY,
+            client_id: github_client_id,
+            client_secret: github_client_secret,
             code: code as string,
-        });
+        })
 
         const response = await axios.post('https://github.com/login/oauth/access_token', params, {
             headers: {
                 'Accept': 'application/json',
             },
-        });
-        // @ts-ignore
-        if (!response?.status === 200) {
-            throw new Error(`GitHub OAuth request failed with status ${response.status}`);
+        })
+        if (!response) {
+            throw new Error(`GitHub OAuth request failed with status ${response}`)
         }
 
-        const data = response.data;
-        res.json(data);
+        const data = response.data
+        res.json(data)
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error' })
     }
 
-});
+})
 
 getGithubUserData.get('/', async (req: Request, res: Response) => {
 
-    const token: any = req.get("Authorization");
+    const token: string = req.get('Authorization') as string
 
     axios.get('https://api.github.com/user', {
         headers: {
             'Authorization': token,
         },
     }).then((response) => {
-        res.json(response.data);
-    }).catch((error) => {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    });
-});
+        res.json(response.data)
+    }).catch(() => {
+        res.status(500).json({ error: 'Internal Server Error' })
+    })
+})
 
-export { getUserToken, getGithubUserData };
+export { getUserToken, getGithubUserData }

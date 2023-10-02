@@ -1,36 +1,36 @@
-import express, { Request, Response } from 'express';
-import { PrismaClient } from "@prisma/client";
-import { authenticateUser } from "../../AuthUser/AuthenticateUser"
-import { clause } from "../../utils/filterLogic"
-import { paginateResults } from "../../utils/pagination"
-import { Review } from "../../types"
+import express, { Request, Response } from 'express'
+import { authenticateUser } from '../../AuthUser/AuthenticateUser'
+import { clause } from '../../utils/filterLogic'
+import { paginateResults } from '../../utils/pagination'
+import { CustomRequest } from '../../types'
+import { GetQueryValues } from '../../utils/QueryParams'
 
-const prisma = new PrismaClient();
-const myReveiw = express.Router();
+const myReveiw = express.Router()
 
-myReveiw.get('/', authenticateUser, async (req: Request | any, res: Response) => {
-    const { selectedTags, filterName, sortName, page, pageSize }: Record<string, any> = req.query;
-    const intPageSize = parseInt(pageSize)
+myReveiw.get('/', authenticateUser, async (req: Request, res: Response) => {
+    const query = GetQueryValues(req)
+    const intPageSize = parseInt(query.pageSize)
 
     try {
-        const whereClause = clause(filterName, JSON.parse(selectedTags));
-        let reviews;
+        const whereClause = clause(query.filterName, JSON.parse(query.selectedTags))
+        let reviews
 
-        if (req.admin) {
-            reviews = await paginateResults<Review>(prisma.review, intPageSize, page, sortName, whereClause);
+        if ((req as CustomRequest).admin) {
+            reviews = await paginateResults(intPageSize, query.page, query.sortName, whereClause)
         } else {
-            reviews = await paginateResults<Review>( prisma.review, intPageSize, page, sortName,
-                { AND: [
-                        { userId: req.user },
+            reviews = await paginateResults(intPageSize, query.page, query.sortName,
+                {
+                    AND: [
+                        { userId: (req as CustomRequest).user },
                         whereClause
                     ]
                 },
-            );
+            )
         }
-        return res.json(reviews);
+        return res.json(reviews)
     } catch (error) {
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error' })
     }
-});
+})
 
 export { myReveiw }

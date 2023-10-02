@@ -1,34 +1,32 @@
-import express, { Request, Response } from "express";
-import { PrismaClient } from '.prisma/client';
-import { clause } from "../../utils/filterLogic"
-import { RequestQuery, ParsedTags, Review, PaginationResult } from "../../types"
-import { paginateResults } from "../../utils/pagination"
+import express, { Request, Response } from 'express'
+import { clause } from '../../utils/filterLogic'
+import { ParsedTags } from '../../types'
+import { paginateResults } from '../../utils/pagination'
+import { GetQueryValues } from '../../utils/QueryParams'
 
-const GetReviews = express.Router();
-const prisma: PrismaClient = new PrismaClient();
+const GetReviews = express.Router()
 
-GetReviews.get("/", async (req: Request, res: Response) => {
+GetReviews.get('/', async (req: Request, res: Response) => {
 
-    const { selectedTags, filterName, sortName, page, pageSize }: RequestQuery|any = req.query;
+    const query = GetQueryValues(req)
 
-    const parsedTags: ParsedTags = JSON.parse(selectedTags);
-    const intPageSize = parseInt(pageSize)
+    const parsedTags: ParsedTags = JSON.parse(query.selectedTags)
+    const intPageSize = parseInt(query.pageSize)
 
     try {
-        const whereClause = clause(filterName, parsedTags)
-        
-        const paginationResult: PaginationResult<Review> = await paginateResults(prisma.review, intPageSize, page, sortName, whereClause);
-        
+        const whereClause = clause(query.filterName, parsedTags)
+
+        const paginationResult = await paginateResults(intPageSize, query.page, query.sortName, whereClause)
+
         if (paginationResult.error) {
-            res.status(404).json({ error: paginationResult.error });
+            res.status(404).json({ error: paginationResult.error })
         } else {
-            const { results, totalPages, currentPage } = paginationResult;
-            res.json({ reviews: results, totalPages, currentPage });
+            const { results, totalPages, currentPage } = paginationResult
+            res.json({ reviews: results, totalPages, currentPage })
         }
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching reviews.' });
+        res.status(500).json({ error: 'An error occurred while fetching reviews.' })
     }
-
 })
 
-export { GetReviews };
+export { GetReviews }

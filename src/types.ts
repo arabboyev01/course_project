@@ -1,3 +1,6 @@
+import { JwtPayload } from 'jsonwebtoken'
+import { Request } from 'express'
+
 export interface SeachQueryParams {
     name?: string
     groupName?: string
@@ -5,26 +8,19 @@ export interface SeachQueryParams {
 }
 
 export interface BaucketParams {
-    Bucket: any
+    Bucket: string
     Key: string
-    Body: any
+    Body: Buffer
     ContentType: string
 }
 
 export interface PaginationResult<T> {
     results?: T[];
-    totalPages?: number;
-    currentPage?: number;
-    error?: string;
+    totalPages?: number
+    currentPage?: number
+    error?: string
 }
 
-export interface RequestQuery {
-    selectedTags: string;
-    filterName: string;
-    sortName: string;
-    page: string;
-    pageSize: string
-}
 
 export type ParsedTags = string[];
 
@@ -36,28 +32,28 @@ export type User = {
     lastName: string
     hashPassword: string
     reviews: Review[]
-    likedBy: any
+    likedBy: string
     imageUrl: string | undefined
-    comments: any
-    ratings: any
+    comments: Comment[]
+    ratings: Rating[]
     userType: string
 }
 
-export type Review = {
+export interface Review {
     id: number
     name: string
     groupName: string
-    tags: any
+    tags: Tag[]
     reviewText: string
-    imageUrl: string | undefined
-    ratings: any
+    imageUrl?: string | null
+    ratings: Rating[]
     grade: number
     isLiked: boolean
-    likes: any
+    likes: Like[]
     createdAt: string
-    comments: any
+    comments: Comment[]
     userId: number
-};
+}
 
 export type Rating = {
     id: number
@@ -67,6 +63,12 @@ export type Rating = {
     review: Review[]
     user: User[]
 }
+export interface PartialRating {
+    id: number
+    ratingNum: number
+    reviewId: number
+    userId: number
+}
 
 export type Like = {
     id: number
@@ -74,6 +76,12 @@ export type Like = {
     reviewId: number
     user: User[]
     review: Review[]
+}
+
+export interface PartialLike {
+    id: number
+    userId: number
+    reviewId: number
 }
 
 export type Comment = {
@@ -90,4 +98,19 @@ export type Tag = {
     id: number
     name: string
     reviews: Review[]
+}
+
+export interface PartialReview {
+    review: Review[]
+    user: User
+    tags: Tag[]
+    ratings: Rating[]
+    likes: Like[]
+}
+
+export type DecodedToken = JwtPayload | string
+
+export interface CustomRequest extends Request {
+    user: number;
+    admin: boolean;
 }

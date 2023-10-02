@@ -1,18 +1,18 @@
-import express, { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-import { HashingPassword } from "../../HashingPassword/Hashing"
+import express, { Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
+import { PrismaClient } from '@prisma/client'
+import { HashingPassword } from '../../HashingPassword/Hashing'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-const GetAuthThirdPartyApi = express.Router();
+const GetAuthThirdPartyApi = express.Router()
 
-GetAuthThirdPartyApi.post("/", async (req: Request, res: Response) => {
-    const { firstName, lastName, username, email, password , imageUrl} = req.body;
+GetAuthThirdPartyApi.post('/', async (req: Request, res: Response) => {
+    const { firstName, lastName, username, email, password , imageUrl} = req.body
     const secretKey = process.env.JWT_SECRET_KEY
 
     try {
-        const existingUser = await prisma.user.findUnique({ where: { username } });
+        const existingUser = await prisma.user.findUnique({ where: { username } })
         
         if (existingUser && existingUser.status === 'block') {
             return res.json('user is blocked')
@@ -20,13 +20,13 @@ GetAuthThirdPartyApi.post("/", async (req: Request, res: Response) => {
 
         if (existingUser) {
 
-            const token = jwt.sign({ userId: existingUser.id }, secretKey as string);
+            const token = jwt.sign({ userId: existingUser.id }, secretKey as string)
 
-            return res.json({ existingUser, token });
+            return res.json({ existingUser, token })
             
         } else {
 
-            const hashedPassword = await HashingPassword(password);
+            const hashedPassword = await HashingPassword(password)
 
             const newUser = await prisma.user.create({
                 data: {
@@ -43,17 +43,17 @@ GetAuthThirdPartyApi.post("/", async (req: Request, res: Response) => {
                 await prisma.user.update({
                     where: { id: 1 },
                     data: { userType: 'ADMIN' }
-                });
+                })
             }
 
-            const token = jwt.sign({ userId: newUser.id }, secretKey as string);
+            const token = jwt.sign({ userId: newUser.id }, secretKey as string)
 
-            return res.json({ newUser, token });
+            return res.json({ newUser, token })
         }
 
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' })
     }
-});
+})
 
 export { GetAuthThirdPartyApi }

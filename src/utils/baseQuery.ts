@@ -42,6 +42,6 @@ const baseQuery = {
             }
         }
     },
-};
+}
 
 export { baseQuery }

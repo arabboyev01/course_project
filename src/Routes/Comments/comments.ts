@@ -1,14 +1,17 @@
-import express, { Request, Response } from "express";
-import { PrismaClient } from '.prisma/client';
-import { authenticateUser } from "../../AuthUser/AuthenticateUser";
+import express, { Request, Response } from 'express'
+import { PrismaClient } from '.prisma/client'
+import { authenticateUser } from '../../AuthUser/AuthenticateUser'
+import { CustomRequest } from '../../types'
 
-const commentReq = express.Router();
-const prisma = new PrismaClient();
+const commentReq = express.Router()
+const prisma = new PrismaClient()
 
-commentReq.post("/", authenticateUser, async (req: Request | any, res: Response) => {
+commentReq.post('/', authenticateUser, async (req: Request, res: Response) => {
     try {
         const { text, reviewId } = req.body
-        const userId = typeof req.user !== 'undefined' ? req.user : undefined;
+        if(!(req as CustomRequest).user) return res.json('Unauthorized')
+
+        const userId: number = (req as CustomRequest).user
         const response = await prisma.comment.create({
             data: {
                 text,
@@ -22,4 +25,4 @@ commentReq.post("/", authenticateUser, async (req: Request | any, res: Response)
     }
 })
 
-export { commentReq };
+export { commentReq }

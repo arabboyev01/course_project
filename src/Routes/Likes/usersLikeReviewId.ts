@@ -1,27 +1,23 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
-const usersLikedReviewId = express.Router();
+const prisma = new PrismaClient()
+const usersLikedReviewId = express.Router()
 
-usersLikedReviewId.get('/', async (req: Request, res: Response): Promise<any> => {
-    const { userId }: any = req.query;
+usersLikedReviewId.get('/', async (req: Request, res: Response) => {
+    const userId: string = req.query.userId as string
 
     try {
         const likedReviews = await prisma.like.findMany({
             where: { userId: parseInt(userId) },
             select: { reviewId: true },
-        });
+        })
 
-        const likedReviewIds = likedReviews.map((like) => like.reviewId);
-
-        return res.json(likedReviewIds);
-
+        const likedReviewIds = likedReviews.map((like) => like.reviewId)
+        return res.json(likedReviewIds)
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while updating/creating like' });
+        res.status(500).json({ error: 'An error occurred while updating/creating like' })
     }
-
-
-});
+})
 
 export { usersLikedReviewId }
