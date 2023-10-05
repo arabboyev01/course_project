@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import { unsupportedType } from './Routes/UnsupportedType'
 import { signUpRoute } from './Routes/SignUp/SignUp'
 import { loginRoute } from './Routes/Login/Login'
 import { ReviewRoutes } from './Routes/Review/ReviewRoutes'
@@ -36,6 +37,7 @@ app.use(cors())
 app.use(express.json())
 app.listen(port, () => console.log(`Server is running on port ${port}`))
 
+app.use('/', unsupportedType)
 app.use('/api/register', signUpRoute)
 app.use('/api/login', loginRoute)
 app.use('/api/review', ReviewRoutes)
