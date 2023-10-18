@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { uploadImageToS3 } from '../../CloudService/connect'
+// import { uploadImageToS3 } from '../../CloudService/connect'
 import { PrismaClient } from '.prisma/client'
 import { authenticateUser } from '../../AuthUser/AuthenticateUser'
 import { upload } from '../../utils/diskStorage'
@@ -23,11 +23,13 @@ ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Req
             { where: { id: (req as CustomRequest).user  } }
         )
 
-        if (user && req.file) {
-            const fileBuffer = req.file.buffer
-            const originalFileName = req.file.originalname
+        // if (user && req.file) {
+        if(user) {
+            // const fileBuffer = req.file.buffer
+            // const originalFileName = req.file.originalname
 
-            const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName)
+            // const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName)
+            const imageUrl =''
 
             if (!parsedId || !(req as CustomRequest).admin || (req as CustomRequest).user === undefined) return res.json('plese provide userId')
 
