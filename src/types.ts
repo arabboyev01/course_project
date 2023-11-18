@@ -114,3 +114,11 @@ export interface CustomRequest extends Request {
     user: number;
     admin: boolean;
 }
+export interface UploadedImageTypes {
+    fieldname: string;
+    originalname: string;
+    encoding: string;
+    mimetype: string;
+    buffer: Buffer;
+    size: number;
+}

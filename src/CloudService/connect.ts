@@ -22,7 +22,6 @@ const uploadImageToS3 = async (imageBuffer: Buffer | undefined, originalName: st
     await s3Client.send(command)
 
     return `https://coursename.s3.${region}.amazonaws.com/${uniqueName}`
-
 }
 
 export { uploadImageToS3 }

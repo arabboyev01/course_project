@@ -1,14 +1,13 @@
 import express, { Request, Response } from 'express'
-// import { uploadImageToS3 } from '../../CloudService/connect'
 import { PrismaClient } from '.prisma/client'
 import { authenticateUser } from '../../AuthUser/AuthenticateUser'
 import { upload } from '../../utils/diskStorage'
 import { tagsQuery } from '../../utils/tagsQuery'
 import { CustomRequest } from '../../types'
+import { uploadImageToGoogleCloud } from '../../CloudService/CloudFlier'
 
 const ReviewRoutes = express.Router()
 const prisma: PrismaClient = new PrismaClient()
-
 
 ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Request, res: Response) => {
 
@@ -20,17 +19,11 @@ ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Req
         const tagIds = await tagsQuery(tagsArray)
 
         const user = await prisma.user.findUnique(
-            { where: { id: (req as CustomRequest).user  } }
+            { where: { id: (req as CustomRequest).user } }
         )
 
-        // if (user && req.file) {
-        if(user) {
-            // const fileBuffer = req.file.buffer
-            // const originalFileName = req.file.originalname
-
-            // const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName)
-            const imageUrl =''
-
+        if (user && req.file) {
+            const imageUrl = await uploadImageToGoogleCloud(req.file)
             if (!parsedId || !(req as CustomRequest).admin || (req as CustomRequest).user === undefined) return res.json('plese provide userId')
 
             const review = await prisma.review.create({

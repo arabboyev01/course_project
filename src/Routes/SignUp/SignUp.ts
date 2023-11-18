@@ -8,6 +8,7 @@ const signUpRoute = express.Router()
 
 signUpRoute.post('/', async (req: Request, res: Response) => {
     const { username, email, firstName, lastName, password } = req.body
+    console.log(username, email, firstName, lastName, password)
 
     const hashedPassword = await HashingPassword(password)
 
