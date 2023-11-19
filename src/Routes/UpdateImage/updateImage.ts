@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { upload } from '../../utils/diskStorage'
 import { authenticateUser } from '../../AuthUser/AuthenticateUser'
-import { uploadImageToS3 } from '../../CloudService/connect'
+import { uploadImageToGoogleCloud } from '../../CloudService/CloudFlier'
 import { CustomRequest } from '../../types'
 
 const prisma = new PrismaClient()
@@ -16,10 +16,7 @@ updateUserImage.put('/', authenticateUser, upload.single('image'), async (req: R
 
         if(!req.file) return res.json('Please upload an image')
 
-        const fileBuffer = req.file.buffer
-        const originalFileName = req.file.originalname
-
-        const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName)
+        const imageUrl: string = await uploadImageToGoogleCloud(req.file)
 
         const existingUser = await prisma.user.findUnique({
             where: { id }
