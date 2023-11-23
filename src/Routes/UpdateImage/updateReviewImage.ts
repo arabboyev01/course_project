@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { upload } from '../../utils/diskStorage'
 import { authenticateUser } from '../../AuthUser/AuthenticateUser'
-import { uploadImageToS3 } from '../../CloudService/connect'
+import { uploadImageToGoogleCloud } from '../../CloudService/CloudFlier'
 import { CustomRequest } from '../../types'
 
 const prisma = new PrismaClient()
@@ -13,26 +13,24 @@ udateReveiwImage.put('/', authenticateUser, upload.single('image'), async (req: 
     try {
 
         const { reviewId } = req.body
-        
-        const singleReview = await prisma.review.findUnique({where: {id: parseInt(reviewId) }})
-        
+
+        const singleReview = await prisma.review.findUnique({ where: { id: parseInt(reviewId) } })
+
         if (!singleReview) {
             return res.status(404).json({ error: 'Review not found' })
         }
 
-        if ((req as CustomRequest).user === singleReview?.userId || (req as CustomRequest).admin) {
+        if ((req as CustomRequest).user === singleReview ?.userId || (req as CustomRequest).admin) {
 
-            if(!req.file) return res.json('please upload image')
-            const fileBuffer = req.file.buffer
-            const originalFileName = req.file.originalname
-            
-            const imageUrl: string = await uploadImageToS3(fileBuffer, originalFileName)
-            
+            if (!req.file) return res.json('please upload image')
+
+            const imageUrl: string = await uploadImageToGoogleCloud(req.file)
+
             const updatedReview = await prisma.review.update({
                 where: { id: parseInt(reviewId) },
                 data: { imageUrl }
             })
-            
+
             return res.json({ message: 'Review imageUrl updated successfully', updatedReview })
 
         } else {

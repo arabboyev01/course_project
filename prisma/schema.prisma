@@ -21,7 +21,21 @@ model User {
   ratings     Rating[] 
   userType    UserType @default(USER)
   status      String   @default("active") 
+  sentMessages   Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
   @@map("users")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  timestamp DateTime @default(now())
+
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId  Int
+
+  receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId Int
 }
 
 enum UserType {
