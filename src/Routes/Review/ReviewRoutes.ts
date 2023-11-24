@@ -24,7 +24,7 @@ ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Req
 
         if (user && req.file) {
             const imageUrl = await uploadImageToGoogleCloud(req.file)
-            if (!parsedId || !(req as CustomRequest).admin || (req as CustomRequest).user === undefined) return res.json('plese provide userId')
+            // if (!parsedId || !(req as CustomRequest).admin || (req as CustomRequest).user === undefined) return res.json('plese provide userId')
 
             const review = await prisma.review.create({
                 data: {
@@ -38,11 +38,12 @@ ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Req
                     userId: (req as CustomRequest).admin ? parsedId : (req as CustomRequest).user,
                 },
             })
-
             res.json(review)
-        } else {
+        }
+        else {
             res.json('Unauthorized user')
         }
+
     } catch (error) {
         return res.status(500).json(error)
     }

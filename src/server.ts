@@ -29,6 +29,9 @@ import { updateUserStatus } from './Routes/UpdateUser/StatusUpdate'
 import { usersLikedReviewId } from './Routes/Likes/usersLikeReviewId'
 import { sumOfLike } from './Routes/Likes/sumLike'
 import { ExploreRoute } from './Routes/Explore/ExploreRoute'
+import { searchUsers } from './Search/SearchUsers'
+import { bookmarks } from './Routes/Bookmarks'
+import { getBookmarks } from './Routes/Bookmarks/getBookmark'
 
 const app = express()
 const port = process.env.PORT || 3002
@@ -67,3 +70,6 @@ app.use('/api/update-user-status', updateUserStatus)
 app.use('/api/user-like-reviewid', usersLikedReviewId)
 app.use('/api/like-sum', sumOfLike)
 app.use('/api/explore-reviews', ExploreRoute)
+app.use('/api/search-users', searchUsers)
+app.use('/api/post-bookmark', bookmarks)
+app.use('/api/get-bookmark', getBookmarks)

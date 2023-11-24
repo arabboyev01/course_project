@@ -6,7 +6,11 @@ const prisma = new PrismaClient()
 
 GetTags.get('/', async (req: Request, res: Response) => {
     try {
-        const reviews = await prisma.tag.findMany()
+        const reviews = await prisma.tag.findMany({
+            include: {
+                reviews: true,
+            },
+        })
         res.json(reviews)
 
     } catch (error) {

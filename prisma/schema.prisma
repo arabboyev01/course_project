@@ -23,6 +23,7 @@ model User {
   status      String   @default("active") 
   sentMessages   Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
+  bookmarks  Bookmark[] @relation("UserBookmarks")
   @@map("users")
 }
 
@@ -58,6 +59,7 @@ model Review {
   comments Comment[] 
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
+  bookmarks  Bookmark[] @relation("ReviewBookmarks")
 }
 
 model Rating {
@@ -93,4 +95,17 @@ model Tag {
   id   Int    @id @default(autoincrement())
   name String @unique
   reviews Review[]
+}
+
+model Bookmark {
+  id          Int       @id @default(autoincrement())
+  userId      Int       
+  reviewId    Int       
+  createdAt   DateTime  @default(now())
+  
+  user        User      @relation("UserBookmarks", fields: [userId], references: [id])
+  
+  review      Review    @relation("ReviewBookmarks", fields: [reviewId], references: [id])
+  
+  @@unique([userId, reviewId])
 }
