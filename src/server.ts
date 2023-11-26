@@ -32,6 +32,8 @@ import { ExploreRoute } from './Routes/Explore/ExploreRoute'
 import { searchUsers } from './Search/SearchUsers'
 import { bookmarks } from './Routes/Bookmarks'
 import { getBookmarks } from './Routes/Bookmarks/getBookmark'
+import { boomarkId } from './Routes/Bookmarks/bookmarkId' 
+import { userProfile } from './Routes/UserProfile'
 
 const app = express()
 const port = process.env.PORT || 3002
@@ -73,3 +75,5 @@ app.use('/api/explore-reviews', ExploreRoute)
 app.use('/api/search-users', searchUsers)
 app.use('/api/post-bookmark', bookmarks)
 app.use('/api/get-bookmark', getBookmarks)
+app.use('/api/get-bookmarkId', boomarkId)
+app.use('/api/user-profile', userProfile)

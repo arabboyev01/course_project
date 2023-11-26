@@ -9,7 +9,6 @@ const bookmarks = express.Router()
 bookmarks.post('/', authenticateUser, async (req: Request, res: Response) => {
     const { reviewId } = req.body
     const userId = typeof (req as CustomRequest) ?.user !== 'undefined' ? (req as CustomRequest) ?.user : undefined
-    console.log('userId', userId, 'reviewId', reviewId)
 
     if (userId === undefined) {
         return res.status(403).json('please_login_first')
@@ -30,13 +29,13 @@ bookmarks.post('/', authenticateUser, async (req: Request, res: Response) => {
                 where: { id: existingLike.id },
             })
 
-            return res.json(`Bookmarked with userId ${userId}, reviewId ${reviewId} was removed`)
+            return res.json('Bookmark deleted')
         } else {
-            const like = await prisma.bookmark.create({
+            await prisma.bookmark.create({
                 data: { userId, reviewId },
             })
 
-            res.status(201).json(like)
+            res.status(201).json('Bookmark created')
         }
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while updating/creating like' })
