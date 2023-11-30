@@ -22,6 +22,9 @@ getBookmarks.get('/', async (req: Request, res: Response) => {
                 id: {
                     in: reviewIds
                 }
+            },
+            include: {
+                user: true
             }
         })
 
