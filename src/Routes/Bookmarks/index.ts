@@ -10,13 +10,13 @@ const bookmarks = express.Router()
 bookmarks.post('/', authenticateUser, async (req: Request, res: Response) => {
     const { reviewId } = req.body
     const userId = typeof (req as CustomRequest) ?.user !== 'undefined' ? (req as CustomRequest) ?.user : undefined
-
+   
     if (userId === undefined) {
         return res.status(403).json('please_login_first')
     }
 
     try {
-        updateCacheForReview(reviewId)
+        
         const existingLike = await prisma.bookmark.findFirst({
             where: {
                 userId: userId,
@@ -29,11 +29,13 @@ bookmarks.post('/', authenticateUser, async (req: Request, res: Response) => {
             await prisma.bookmark.delete({
                 where: { id: existingLike.id },
             })
+            updateCacheForReview()
             return res.json('Bookmark deleted')
         } else {
             await prisma.bookmark.create({
                 data: { userId, reviewId },
             })
+            updateCacheForReview()
             res.status(201).json('Bookmark created')
         }
     } catch (error) {

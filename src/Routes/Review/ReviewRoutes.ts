@@ -12,7 +12,7 @@ const prisma: PrismaClient = new PrismaClient()
 ReviewRoutes.post('/', authenticateUser, upload.single('image'), async (req: Request, res: Response) => {
 
     const { name, groupName, tags, reviewText, userId } = req.body
-
+ 
     try {
         const tagsArray = JSON.parse(tags)
         const parsedId = parseInt(userId)
