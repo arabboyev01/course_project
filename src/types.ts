@@ -3,7 +3,7 @@ import { Request } from 'express'
 
 export interface SeachQueryParams {
     name?: string
-    groupName?: string
+    username?: string
     latest?: string
 }
 

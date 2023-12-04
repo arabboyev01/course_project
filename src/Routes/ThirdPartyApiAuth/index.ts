@@ -19,15 +19,10 @@ GetAuthThirdPartyApi.post('/', async (req: Request, res: Response) => {
         }
 
         if (existingUser) {
-
             const token = jwt.sign({ userId: existingUser.id }, secretKey as string)
-
             return res.json({ existingUser, token })
-            
         } else {
-
             const hashedPassword = await HashingPassword(password)
-
             const newUser = await prisma.user.create({
                 data: {
                     username,
@@ -45,9 +40,7 @@ GetAuthThirdPartyApi.post('/', async (req: Request, res: Response) => {
                     data: { userType: 'ADMIN' }
                 })
             }
-
             const token = jwt.sign({ userId: newUser.id }, secretKey as string)
-
             return res.json({ newUser, token })
         }
 

@@ -11,13 +11,10 @@ const updateUserImage = express.Router()
 
 updateUserImage.put('/', authenticateUser, upload.single('image'), async (req: Request, res: Response) => {
     try {
-
         const id = (req as CustomRequest).user
-
         if(!req.file) return res.json('Please upload an image')
-
         const imageUrl: string = await uploadImageToGoogleCloud(req.file)
-
+        
         const existingUser = await prisma.user.findUnique({
             where: { id }
         })
